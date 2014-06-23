@@ -1,0 +1,9 @@
+{
+    "name": "Beepsend-php-sdk",
+    "require": {
+        "php": ">=5.3.4"
+    },
+    "autoload": {
+        "psr-0": { "Beepsend": "src/" }
+    }
+}
