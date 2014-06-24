@@ -26,7 +26,8 @@ class User implements ResourceInterface {
      */
     private $actions = array(
         'users' => '/users/',
-        'email' => '/email'
+        'email' => '/email',
+        'password' => '/password'
     );
     
     /**
@@ -75,6 +76,23 @@ class User implements ResourceInterface {
         );
         
         $response = $this->request->call($this->actions['users'] . $this->user . $this->actions['email'], 'PUT', $data);
+        return $response->get();
+    }
+    
+    /**
+     * Update user password
+     * @param string $newPassword New password that you want to set
+     * @param string $oldPassword User current password, needed for extra security.
+     * @return array
+     */
+    public function updatePassword($newPassword, $oldPassword)
+    {
+        $data = array(
+            'password' => $oldPassword,
+            'new_password' => $newPassword
+        );
+        
+        $response = $this->request->call($this->actions['users'] . $this->user . $this->actions['password'], 'PUT', $data);
         return $response->get();
     }
 }
