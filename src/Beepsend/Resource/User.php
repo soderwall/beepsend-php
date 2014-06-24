@@ -49,6 +49,18 @@ class User implements ResourceInterface {
     }
     
     /**
+     * Update current user.
+     * @param array $options Array of options that we wan't to update. 
+     * @link http://api.beepsend.com/docs.html#user-update List if all options we can update
+     * @return array
+     */
+    public function update($options)
+    {
+        $response = $this->request->call($this->actions['users'] . $this->user, 'PUT', $options);
+        return $response->get();
+    }
+    
+    /**
      * Update user email
      * Password is needed for extra security
      * @param string $email Your new email address
