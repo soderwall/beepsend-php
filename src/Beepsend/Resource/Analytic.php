@@ -19,7 +19,7 @@ class Analytic implements ResourceInterface {
      */
     private $actions = array(
         'summary' => '/analytics/summary/',
-        'summary' => '/analytics/network/',
+        'network' => '/analytics/network/',
         'batch' => '/analytics/batches/'
     );
     
@@ -84,7 +84,7 @@ class Analytic implements ResourceInterface {
             $data['MNC'] = $MNC;
         }
         
-        $response = $this->request->call($this->actions['summary'] . $connection, 'GET', $data);
+        $response = $this->request->call($this->actions['network'] . $connection, 'GET', $data);
         return $response->get();
     }
     

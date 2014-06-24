@@ -27,7 +27,8 @@ class User implements ResourceInterface {
     private $actions = array(
         'users' => '/users/',
         'email' => '/email',
-        'password' => '/password'
+        'password' => 'password',
+        'passwordreset' => 'passwordreset'
     );
     
     /**
@@ -92,7 +93,38 @@ class User implements ResourceInterface {
             'new_password' => $newPassword
         );
         
-        $response = $this->request->call($this->actions['users'] . $this->user . $this->actions['password'], 'PUT', $data);
+        $response = $this->request->call($this->actions['users'] . $this->user . '/' . $this->actions['password'], 'PUT', $data);
+        return $response->get();
+    }
+    
+    /**
+     * Reset user password, beepsend will send you email.
+     * @param string $email Your login email
+     * @return array
+     */
+    public function resetUserPassword($email)
+    {
+        $data = array(
+            'email' => $email
+        );
+        
+        $response = $this->request->call($this->actions['users'] . $this->actions['passwordreset'], 'GET', $data);
+        return $response->get();
+    }
+    
+    /**
+     * You can set new password with reset hash
+     * @param string $hash Hash that was sent to you via email
+     * @param password $password Password you want to set
+     * @return array
+     */
+    public function setNewPassword($hash, $password)
+    {
+        $data = array(
+            'password' => $password
+        );
+        
+        $response = $this->request->call($this->actions['users'] . $this->actions['password'] . '/' . $hash, 'PUT', $data);
         return $response->get();
     }
 }
