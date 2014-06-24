@@ -27,8 +27,14 @@ final class InvalidRequest extends \Exception
      */
     private function parseResponse($rawResponse)
     {
+        $errors = array();
         $response = json_decode($rawResponse, true);
-        $errors = $response[0]['errors'];
+        
+        if (isset($response['errors'])) {
+            $errors = $response['errors'];
+        } else if ($response[0]['errors']) {
+            $errors = $response[0]['errors'];
+        }
         
         return $this->joinErrros($errors);
     }
@@ -43,7 +49,9 @@ final class InvalidRequest extends \Exception
         $response = null;
         
         foreach ($errors as $error) {
-            $response .= ' Code: ' . $error['code'] . ' ' . $error['description'];
+            $code = isset($error['code']) ? 'Code: ' . $error['code'] . ' ' : null;
+            $description = isset($error['description']) ? $error['description'] : $error;
+            $response .= $code . $description;
         }
         
         return $response;
