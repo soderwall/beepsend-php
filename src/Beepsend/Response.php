@@ -39,7 +39,7 @@ class Response {
     
     /**
      * Return response data
-     * @return Array
+     * @return array
      */
     public function get()
     {
@@ -47,7 +47,7 @@ class Response {
     }
     
     /**
-     * Download CSV file from response
+     * Download CSV file from response and set proper headers
      */
     public function getCsv($fileName)
     {

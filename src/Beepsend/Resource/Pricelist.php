@@ -9,12 +9,12 @@ class Pricelist implements ResourceInterface {
     
     /**
      * Beepsend request handler
-     * @var Beepsend\Request;
+     * @var Beepsend\Request
      */
     private $request;
     
     /**
-     * Action to call
+     * Actions to call
      * @var array
      */
     private $actions = array(

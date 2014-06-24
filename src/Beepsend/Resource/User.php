@@ -9,7 +9,7 @@ class User implements ResourceInterface {
     
     /**
      * Beepsend request handler
-     * @var Beepsend\Request;
+     * @var Beepsend\Request
      */
     private $request;
     
@@ -21,7 +21,7 @@ class User implements ResourceInterface {
     private $user = 'me';
     
     /**
-     * Action to call
+     * Actions to call
      * @var array
      */
     private $actions = array(

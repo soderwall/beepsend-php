@@ -10,7 +10,7 @@ use Beepsend\Exception\CurlExtension;
 class Client {
     
     /**
-     * Version of Beepsend SDK version
+     * Version of Beepsend PHP helper
      */
     private $version = '0.1';
     
@@ -23,6 +23,7 @@ class Client {
     /**
      * Init beepsend client
      * @param string $token User or Connection token to work with
+     * @throws CurlExtension
      */
     public function __construct($token)
     {
@@ -35,7 +36,7 @@ class Client {
     }
     
     /**
-     * Load resource
+     * Load resource that user will work with
      * @param string $resource Name of resource that we wan't to load
      * @return Object
      */

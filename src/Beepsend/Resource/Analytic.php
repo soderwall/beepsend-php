@@ -14,7 +14,7 @@ class Analytic implements ResourceInterface {
     private $request;
     
     /**
-     * Action to call
+     * Actions to call
      * @var array
      */
     private $actions = array(

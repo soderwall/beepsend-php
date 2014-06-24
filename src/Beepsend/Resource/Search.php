@@ -9,7 +9,7 @@ class Search implements ResourceInterface {
     
     /**
      * Beepsend request handler
-     * @var Beepsend\Request;
+     * @var Beepsend\Request
      */
     private $request;
     

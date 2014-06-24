@@ -16,7 +16,7 @@ class Request {
     private $version = 2;
     
     /**
-     * Beepsend request token
+     * Beepsend PHP library user agent
      * @var string
      */
     private $userAgent = 'beepsend-php-sdk-v0.1';
@@ -36,6 +36,7 @@ class Request {
     /**
      * Set requred values for Beepsend request
      * @param string $token Token to work with
+     * @throws InvalidToken
      */
     public function __construct($token)
     {
@@ -48,11 +49,13 @@ class Request {
     }
     
     /**
-     * Make some request over Beepsend API
+     * Make some request over Beepsend API, supporting GET, POST, PUT and DELETE methods
      * @param string $action Action that we are calling
      * @param string $method Request method
      * @param array $params Array of additional parameters
      * @return Beepsend\Response
+     * @throws NotFound
+     * @throws InvalidRequest
      */
     public function call($action, $method = 'GET', $params = array())
     {
@@ -115,7 +118,7 @@ class Request {
     }
     
     /**
-     * Append token to url, using token in every request
+     * Append token to url, using token in every request.
      * @param string $url Url that we will call
      * @param string $token Token that we are using
      * @return string
