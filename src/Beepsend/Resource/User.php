@@ -28,7 +28,8 @@ class User implements ResourceInterface {
         'users' => '/users/',
         'email' => '/email',
         'password' => 'password',
-        'passwordreset' => 'passwordreset'
+        'passwordreset' => 'passwordreset',
+        'tokenreset' => '/tokenreset'
     );
     
     /**
@@ -125,6 +126,21 @@ class User implements ResourceInterface {
         );
         
         $response = $this->request->call($this->actions['users'] . $this->actions['password'] . '/' . $hash, 'PUT', $data);
+        return $response->get();
+    }
+    
+    /**
+     * Reset user token, using your current password for extra security
+     * @param string $password Current password
+     * @return array
+     */
+    public function resetUserToken($password)
+    {
+        $data = array(
+            'password' => $password
+        );
+        
+        $response = $this->request->call($this->actions['users'] . $this->user . $this->actions['tokenreset'], 'GET', $data);
         return $response->get();
     }
 }
