@@ -63,6 +63,35 @@ class Message implements ResourceInterface {
     }
     
     /**
+     * Send SMS to your groups of contacts
+     * @param int|string Number we are sending from or text
+     * @param int|array $groups Group where we are sending message, for multiple groups use array (number1, number2)
+     * @param string $message Message we are sending
+     * @param string $connection Connection id to use for sending sms
+     * @param string $encoding Encoding of message UTF-8, ISO-8859-15 or Unicode
+     * @param array $options Array of additional options. More info on: http://api.beepsend.com/docs.html#send-sms
+     * @return array
+     */
+    public function sendBatches($from, $groups, $message, $connection = null, $encoding = 'UTF-8', $options = array())
+    {
+        $data = array(
+            'from' => $from,
+            'groups' => $groups,
+            'message' => mb_convert_encoding($message, $encoding, 'UTF-8'),
+            'encoding' => $encoding,
+            'receive_dlr' => 0
+        );
+                
+        /* Merge additional options if we have */
+        if (!empty($options)) {
+            $data = array_merge($data, $options);
+        }
+        
+        $response = $this->request->call($this->actions['batches'] . $connection, 'POST', $data);
+        return $response->get();
+    }
+    
+    /**
      * Get message details of sent messages through Beepsend
      * @param int $smsId Id of message
      */
