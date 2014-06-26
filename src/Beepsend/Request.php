@@ -103,6 +103,50 @@ class Request {
     }
     
     /**
+     * Upload file to Beepsend API, currently supporting only POST method
+     * @param string $action Action that we are calling
+     * @param array $params Array of additional parameters
+     * @return Beepsend\Response
+     * @throws NotFound
+     * @throws InvalidRequest
+     */
+    public function upload($action, $params = array())
+    {
+        $url = $this->appendTokenToUrl($action, $this->token);
+        
+        $ch = curl_init($this->baseApiUrl . '/' . $this->version . $url);
+        curl_setopt($ch, CURLOPT_USERAGENT, $this->userAgent);
+        curl_setopt($ch, CURLOPT_HEADER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
+        
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(                                                                        
+            'Content-Type: application/x-www-form-urlencoded'
+        ));
+
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
+        
+        $response = curl_exec($ch);
+        $info = curl_getinfo($ch);
+        curl_close($ch);
+        
+        var_dump($response);
+        var_dump($info);
+        die();
+        
+        switch ((integer)$info['http_code']) {
+            case 200:
+            case 201:
+            case 204:
+                return new Response($response, $info);
+            case 403:
+                throw new InvalidRequest($response);
+            case 404:
+                throw new NotFound('Call you are looking for not existing, this means that something is wrong with API or this SDK.');
+        }
+    }
+    
+    /**
      * Append parameters to url, using for GET request.
      * @param string $url Url that we will call
      * @param array $parameters Array of parameters

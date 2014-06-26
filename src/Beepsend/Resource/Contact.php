@@ -4,6 +4,7 @@ namespace Beepsend\Resource;
 
 use Beepsend\Request;
 use Beepsend\Resource\ResourceInterface;
+use Beepsend\Exception\FileNotFound;
 
 class Contact implements ResourceInterface {
     
@@ -19,7 +20,8 @@ class Contact implements ResourceInterface {
      */
     private $actions = array(
         'contacts' => '/contacts/',
-        'groups' => '/contacts/groups/'
+        'groups' => '/contacts/groups/',
+        'upload' => '/upload/'
     );
     
     /**
@@ -165,6 +167,25 @@ class Contact implements ResourceInterface {
     public function deleteGroup($groupId)
     {
         $response = $this->request->call($this->actions['groups'] . $groupId, 'DELETE');
+        return $response->get();
+    }
+    
+    /**
+     * Upload contacts stored in a csv file to some group
+     * @param string $file Path to csv file
+     * @param int $groupId Group id
+     * @link http://api.beepsend.com/docs.html#contacts-upload More informations about file formating
+     * @return array
+     */
+    public function upload($file, $groupId)
+    {
+        if (!file_exists($file)) {
+            throw new FileNotFound('File you are trying to upload doesn\'t exists!');
+        }
+        
+        $data = array('contacts' => new \CurlFile($file, 'text/csv', 'contacts'));
+        
+        $response = $this->request->upload($this->actions['groups'] . $groupId . $this->actions['upload'], $data);
         return $response->get();
     }
     
