@@ -26,7 +26,8 @@ class User implements ResourceInterface {
      */
     private $actions = array(
         'users' => '/users/',
-        'email' => '/email',
+        'email' => 'email',
+        'phone' => 'phone',
         'password' => 'password',
         'passwordreset' => 'passwordreset',
         'tokenreset' => '/tokenreset'
@@ -77,7 +78,7 @@ class User implements ResourceInterface {
             'password' => $password
         );
         
-        $response = $this->request->call($this->actions['users'] . $this->user . $this->actions['email'], 'PUT', $data);
+        $response = $this->request->call($this->actions['users'] . $this->user . '/' . $this->actions['email'], 'PUT', $data);
         return $response->get();
     }
     
@@ -141,6 +142,18 @@ class User implements ResourceInterface {
         );
         
         $response = $this->request->call($this->actions['users'] . $this->user . $this->actions['tokenreset'], 'GET', $data);
+        return $response->get();
+    }
+    
+    /**
+     * An email will be sent out after changing your email address asking you to verify that you have indeed changed it. 
+     * Use the unique hash in the verification link to perform the verification.
+     * @param string $hash
+     * @return array
+     */
+    public function verifyEmail($hash)
+    {
+        $response = $this->request->call($this->actions['users'] . $this->actions['email'] . '/' . $hash, 'GET');
         return $response->get();
     }
 }
