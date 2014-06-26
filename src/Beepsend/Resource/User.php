@@ -156,4 +156,15 @@ class User implements ResourceInterface {
         $response = $this->request->call($this->actions['users'] . $this->actions['email'] . '/' . $hash, 'GET');
         return $response->get();
     }
+    
+    /**
+     * After changing your phone number. An SMS will be sent out asking you to verify the change. Use the unique hash to verify.
+     * @param string $hash
+     * @return array
+     */
+    public function verifyPhone($hash)
+    {
+        $response = $this->request->call($this->actions['users'] . $this->actions['phone'] . '/' . $hash, 'GET');
+        return $response->get();
+    }
 }
