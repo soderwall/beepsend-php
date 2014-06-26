@@ -72,7 +72,7 @@ class Message implements ResourceInterface {
      * @param array $options Array of additional options. More info on: http://api.beepsend.com/docs.html#send-sms
      * @return array
      */
-    public function sendBatches($from, $groups, $message, $connection = null, $encoding = 'UTF-8', $options = array())
+    public function groupSending($from, $groups, $message, $connection = null, $encoding = 'UTF-8', $options = array())
     {
         $data = array(
             'from' => $from,
