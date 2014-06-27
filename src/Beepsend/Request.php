@@ -94,6 +94,8 @@ class Request {
             case 201:
             case 204:
                 return new Response($response, $info);
+            case 401:
+                throw new InvalidToken('A valid user API-token is required.');
             case 403:
                 throw new InvalidRequest($response);
             case 404:
@@ -110,6 +112,7 @@ class Request {
      * @return Beepsend\Response
      * @throws NotFound
      * @throws InvalidRequest
+     * @throws InvalidToken
      */
     public function upload($action, $params = array(), $rawData = '')
     {
@@ -136,6 +139,8 @@ class Request {
             case 201:
             case 204:
                 return new Response($response, $info);
+            case 401:
+                throw new InvalidToken('A valid user API-token is required.');
             case 403:
                 throw new InvalidRequest($response);
             case 404:
