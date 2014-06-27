@@ -106,11 +106,12 @@ class Request {
      * Upload file to Beepsend API, currently supporting only POST method
      * @param string $action Action that we are calling
      * @param array $params Array of additional parameters
+     * @param string $rawData String using this for posting file content
      * @return Beepsend\Response
      * @throws NotFound
      * @throws InvalidRequest
      */
-    public function upload($action, $params = array())
+    public function upload($action, $params = array(), $rawData = '')
     {
         $url = $this->appendTokenToUrl($action, $this->token);
         
@@ -123,16 +124,12 @@ class Request {
         curl_setopt($ch, CURLOPT_HTTPHEADER, array(                                                                        
             'Content-Type: application/x-www-form-urlencoded'
         ));
-
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
+        
+        curl_setopt($ch, CURLOPT_POSTFIELDS, count($params) > 0 ? $params : $rawData);
         
         $response = curl_exec($ch);
         $info = curl_getinfo($ch);
         curl_close($ch);
-        
-        var_dump($response);
-        var_dump($info);
-        die();
         
         switch ((integer)$info['http_code']) {
             case 200:

@@ -183,7 +183,8 @@ class Contact implements ResourceInterface {
             throw new FileNotFound('File you are trying to upload doesn\'t exists!');
         }
         
-        $data = array('contacts' => new \CurlFile($file, 'text/csv', 'contacts'));
+        /* Read file data */
+        $data = file_get_contents($file);
         
         $response = $this->request->upload($this->actions['groups'] . $groupId . $this->actions['upload'], $data);
         return $response->get();
