@@ -163,19 +163,4 @@ class Request {
         return $url . '&' . http_build_query($parameters);
     }
     
-    /**
-     * Append token to url, using token in every request.
-     * @param string $url Url that we will call
-     * @param string $token Token that we are using
-     * @return string
-     */
-    private function appendTokenToUrl($url, $token)
-    {
-        if (strpos($url, '?') == true) {
-            return $url . '&api_token' . $token;
-        }
-        
-        return $url . '?api_token=' . $token;
-    }
-    
 }
