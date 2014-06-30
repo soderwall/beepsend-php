@@ -59,27 +59,28 @@ class Request {
      */
     public function call($action, $method = 'GET', $params = array())
     {
-        $url = $this->appendTokenToUrl($action, $this->token);
-        
         if ($method == 'GET') {
             $url = $this->appendParamsToUrl($url, $params);
         }
         
-        $ch = curl_init($this->baseApiUrl . '/' . $this->version . $url);
+        $ch = curl_init($this->baseApiUrl . '/' . $this->version . $action);
         curl_setopt($ch, CURLOPT_USERAGENT, $this->userAgent);
         curl_setopt($ch, CURLOPT_HEADER, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
         
+        /* Set authorization token */
+        $headers = array('Authorization: Token ' . $this->token);
+        
         if ($method !== 'GET') {
 
-            curl_setopt($ch, CURLOPT_HTTPHEADER, array(                                                                        
-                'Content-Type: application/json',                                                                                
-                'Content-Length: ' . strlen(json_encode($params)))                                                                      
-            );
+            $headers[] = 'Content-Type: application/json';
+            $headers[] = 'Content-Length: ' . strlen(json_encode($params));
             
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($params));
         }
+        
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         
         if ($method == 'PUT' || $method == 'DELETE') {
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
@@ -116,15 +117,14 @@ class Request {
      */
     public function upload($action, $params = array(), $rawData = '')
     {
-        $url = $this->appendTokenToUrl($action, $this->token);
-        
-        $ch = curl_init($this->baseApiUrl . '/' . $this->version . $url);
+        $ch = curl_init($this->baseApiUrl . '/' . $this->version . $action);
         curl_setopt($ch, CURLOPT_USERAGENT, $this->userAgent);
         curl_setopt($ch, CURLOPT_HEADER, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
         
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(                                                                        
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(    
+            'Authorization: Token ' . $this->token,
             'Content-Type: application/x-www-form-urlencoded'
         ));
         
