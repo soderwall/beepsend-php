@@ -6,6 +6,7 @@ use Beepsend\Response;
 use Beepsend\Exception\InvalidToken;
 use Beepsend\Exception\InvalidRequest;
 use Beepsend\Exception\NotFound;
+use Beepsend\Exception\InternalError;
 
 class Request {
     
@@ -101,6 +102,8 @@ class Request {
                 throw new InvalidRequest($response);
             case 404:
                 throw new NotFound('Call you are looking for not existing, this means that something is wrong with API or this SDK.');
+            case 500:
+                throw new InternalError('Something is wrong with API, please try again later.');
         }
         
     }
@@ -145,6 +148,8 @@ class Request {
                 throw new InvalidRequest($response);
             case 404:
                 throw new NotFound('Call you are looking for not existing, this means that something is wrong with API or this SDK.');
+            case 500:
+                throw new InternalError('Something is wrong with API, please try again later.');
         }
     }
     
