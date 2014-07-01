@@ -63,7 +63,7 @@ class Request {
      * @param array $params Array of additional parameters
      * @return Beepsend\Response
      */
-    public function call($action, $method = 'GET', $params = array())
+    public function execute($action, $method = 'GET', $params = array())
     {
         return $this->connector->execute($action, $method, $params);
     }

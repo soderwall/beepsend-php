@@ -58,7 +58,7 @@ class Message implements ResourceInterface {
             $data = array_merge($data, $options);
         }
         
-        $response = $this->request->call($this->actions['sms'] . $connection, 'POST', $data);
+        $response = $this->request->execute($this->actions['sms'] . $connection, 'POST', $data);
         return $response->get();
     }
     
@@ -87,7 +87,7 @@ class Message implements ResourceInterface {
             $data = array_merge($data, $options);
         }
         
-        $response = $this->request->call($this->actions['batches'] . $connection, 'POST', $data);
+        $response = $this->request->execute($this->actions['batches'] . $connection, 'POST', $data);
         return $response->get();
     }
     
@@ -97,7 +97,7 @@ class Message implements ResourceInterface {
      */
     public function lookup($smsId)
     {
-        $response = $this->request->call($this->actions['sms'] . $smsId, 'GET');
+        $response = $this->request->execute($this->actions['sms'] . $smsId, 'GET');
         return $response->get();
     }
     
@@ -107,7 +107,7 @@ class Message implements ResourceInterface {
      */
     public function multipleLookup($options = array())
     {
-        $response = $this->request->call($this->actions['sms'], 'GET', $options);
+        $response = $this->request->execute($this->actions['sms'], 'GET', $options);
         return $response->get();
     }
     
@@ -136,7 +136,7 @@ class Message implements ResourceInterface {
             $data = array_merge($data, $options);
         }
         
-        $response = $this->request->call($this->actions['validate'] . $connection, 'POST', $data);
+        $response = $this->request->execute($this->actions['validate'] . $connection, 'POST', $data);
         return $response->get();
     }
     
@@ -146,7 +146,7 @@ class Message implements ResourceInterface {
      */
     public function batches()
     {
-        $response = $this->request->call($this->actions['batches'], 'GET');
+        $response = $this->request->execute($this->actions['batches'], 'GET');
         return $response->get();
     }
     
@@ -166,7 +166,7 @@ class Message implements ResourceInterface {
             'encoding' => $encoding
         );
         
-        $response = $this->request->call($this->actions['sms'] . $this->actions['estimation'] . $connection, 'POST', $data);
+        $response = $this->request->execute($this->actions['sms'] . $this->actions['estimation'] . $connection, 'POST', $data);
         return $response->get();
     }
     
@@ -185,7 +185,7 @@ class Message implements ResourceInterface {
             'encoding' => $encoding
         );
         
-        $response = $this->request->call($this->actions['sms'] . $this->actions['estimation'] . $connection, 'POST', $data);
+        $response = $this->request->execute($this->actions['sms'] . $this->actions['estimation'] . $connection, 'POST', $data);
         return $response->get();
     }
     

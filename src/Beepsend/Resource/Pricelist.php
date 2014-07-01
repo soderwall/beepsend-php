@@ -38,7 +38,7 @@ class Pricelist implements ResourceInterface {
      */
     public function get($conection = 'me')
     {
-        $response = $this->request->call($this->actions['connections'] . $conection . $this->actions['pricelists'], 'GET');
+        $response = $this->request->execute($this->actions['connections'] . $conection . $this->actions['pricelists'], 'GET');
         return $response->get();
     }
     
@@ -47,7 +47,7 @@ class Pricelist implements ResourceInterface {
      */
     public function download($connection)
     {
-        $response = $this->request->call($this->actions['download'] . $connection . '.csv', 'GET');
+        $response = $this->request->execute($this->actions['download'] . $connection . '.csv', 'GET');
         return $response->getCsv($connection . '.csv');
     }
     

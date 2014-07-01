@@ -36,7 +36,7 @@ class Customer implements ResourceInterface {
      */
     public function data()
     {
-        $response = $this->request->call($this->actions['data'], 'GET');
+        $response = $this->request->execute($this->actions['data'], 'GET');
         return $response->get();
     }
     

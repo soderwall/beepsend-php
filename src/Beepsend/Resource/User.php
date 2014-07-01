@@ -48,7 +48,7 @@ class User implements ResourceInterface {
      */
     public function data()
     {
-        $response = $this->request->call($this->actions['users'] . $this->user, 'GET');
+        $response = $this->request->execute($this->actions['users'] . $this->user, 'GET');
         return $response->get();
     }
     
@@ -60,7 +60,7 @@ class User implements ResourceInterface {
      */
     public function update($options)
     {
-        $response = $this->request->call($this->actions['users'] . $this->user, 'PUT', $options);
+        $response = $this->request->execute($this->actions['users'] . $this->user, 'PUT', $options);
         return $response->get();
     }
     
@@ -78,7 +78,7 @@ class User implements ResourceInterface {
             'password' => $password
         );
         
-        $response = $this->request->call($this->actions['users'] . $this->user . '/' . $this->actions['email'], 'PUT', $data);
+        $response = $this->request->execute($this->actions['users'] . $this->user . '/' . $this->actions['email'], 'PUT', $data);
         return $response->get();
     }
     
@@ -95,7 +95,7 @@ class User implements ResourceInterface {
             'new_password' => $newPassword
         );
         
-        $response = $this->request->call($this->actions['users'] . $this->user . '/' . $this->actions['password'], 'PUT', $data);
+        $response = $this->request->execute($this->actions['users'] . $this->user . '/' . $this->actions['password'], 'PUT', $data);
         return $response->get();
     }
     
@@ -110,7 +110,7 @@ class User implements ResourceInterface {
             'email' => $email
         );
         
-        $response = $this->request->call($this->actions['users'] . $this->actions['passwordreset'], 'GET', $data);
+        $response = $this->request->execute($this->actions['users'] . $this->actions['passwordreset'], 'GET', $data);
         return $response->get();
     }
     
@@ -126,7 +126,7 @@ class User implements ResourceInterface {
             'password' => $password
         );
         
-        $response = $this->request->call($this->actions['users'] . $this->actions['password'] . '/' . $hash, 'PUT', $data);
+        $response = $this->request->execute($this->actions['users'] . $this->actions['password'] . '/' . $hash, 'PUT', $data);
         return $response->get();
     }
     
@@ -141,7 +141,7 @@ class User implements ResourceInterface {
             'password' => $password
         );
         
-        $response = $this->request->call($this->actions['users'] . $this->user . $this->actions['tokenreset'], 'GET', $data);
+        $response = $this->request->execute($this->actions['users'] . $this->user . $this->actions['tokenreset'], 'GET', $data);
         return $response->get();
     }
     
@@ -153,7 +153,7 @@ class User implements ResourceInterface {
      */
     public function verifyEmail($hash)
     {
-        $response = $this->request->call($this->actions['users'] . $this->actions['email'] . '/' . $hash, 'GET');
+        $response = $this->request->execute($this->actions['users'] . $this->actions['email'] . '/' . $hash, 'GET');
         return $response->get();
     }
     
@@ -164,7 +164,7 @@ class User implements ResourceInterface {
      */
     public function verifyPhone($hash)
     {
-        $response = $this->request->call($this->actions['users'] . $this->actions['phone'] . '/' . $hash, 'GET');
+        $response = $this->request->execute($this->actions['users'] . $this->actions['phone'] . '/' . $hash, 'GET');
         return $response->get();
     }
 }

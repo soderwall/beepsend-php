@@ -51,7 +51,7 @@ class Contact implements ResourceInterface {
             $data['sort'] = $sort;
         }
         
-        $response = $this->request->call($this->actions['contacts'], 'GET', $data);
+        $response = $this->request->execute($this->actions['contacts'], 'GET', $data);
         return $response->get();
     }
     
@@ -81,7 +81,7 @@ class Contact implements ResourceInterface {
             $data['group_id'] = $groupId;
         }
         
-        $response = $this->request->call($this->actions['contacts'], 'POST', $data);
+        $response = $this->request->execute($this->actions['contacts'], 'POST', $data);
         return $response->get();
     }
     
@@ -92,7 +92,7 @@ class Contact implements ResourceInterface {
      */
     public function update($contactId, $options)
     {
-        $response = $this->request->call($this->actions['contacts'] . $contactId, 'PUT', $options);
+        $response = $this->request->execute($this->actions['contacts'] . $contactId, 'PUT', $options);
         return $response->get();
     }
     
@@ -103,7 +103,7 @@ class Contact implements ResourceInterface {
      */
     public function delete($contactId)
     {
-        $response = $this->request->call($this->actions['contacts'] . $contactId, 'DELETE');
+        $response = $this->request->execute($this->actions['contacts'] . $contactId, 'DELETE');
         return $response->get();
     }
     
@@ -113,7 +113,7 @@ class Contact implements ResourceInterface {
      */
     public function groups()
     {
-        $response = $this->request->call($this->actions['groups'], 'GET');
+        $response = $this->request->execute($this->actions['groups'], 'GET');
         return $response->get();
     }
     
@@ -124,7 +124,7 @@ class Contact implements ResourceInterface {
      */
     public function group($groupId)
     {
-        $response = $this->request->call($this->actions['groups'] . $groupId, 'GET');
+        $response = $this->request->execute($this->actions['groups'] . $groupId, 'GET');
         return $response->get();
     }
     
@@ -139,7 +139,7 @@ class Contact implements ResourceInterface {
             'name' => $groupName
         );
         
-        $response = $this->request->call($this->actions['groups'], 'POST', $data);
+        $response = $this->request->execute($this->actions['groups'], 'POST', $data);
         return $response->get();
     }
     
@@ -155,7 +155,7 @@ class Contact implements ResourceInterface {
             'name' => $groupName
         );
         
-        $response = $this->request->call($this->actions['groups'] . $groupId, 'PUT', $data);
+        $response = $this->request->execute($this->actions['groups'] . $groupId, 'PUT', $data);
         return $response->get();
     }
     
@@ -166,7 +166,7 @@ class Contact implements ResourceInterface {
      */
     public function deleteGroup($groupId)
     {
-        $response = $this->request->call($this->actions['groups'] . $groupId, 'DELETE');
+        $response = $this->request->execute($this->actions['groups'] . $groupId, 'DELETE');
         return $response->get();
     }
     

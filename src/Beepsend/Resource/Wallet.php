@@ -38,7 +38,7 @@ class Wallet implements ResourceInterface {
      */
     public function all()
     {
-        $response = $this->request->call($this->actions['wallets'], 'GET');
+        $response = $this->request->execute($this->actions['wallets'], 'GET');
         return $response->get();
     }
     
@@ -49,7 +49,7 @@ class Wallet implements ResourceInterface {
      */
     public function data($walletId)
     {
-        $response = $this->request->call($this->actions['wallets'] . $walletId, 'GET');
+        $response = $this->request->execute($this->actions['wallets'] . $walletId, 'GET');
         return $response->get();
     }
     
@@ -72,7 +72,7 @@ class Wallet implements ResourceInterface {
             $data['notify_limit'] = $notifyLimit;
         }
         
-        $response = $this->request->call($this->actions['wallets'] . $walletId, 'PUT', $data);
+        $response = $this->request->execute($this->actions['wallets'] . $walletId, 'PUT', $data);
         return $response->get();
     }
     
@@ -83,7 +83,7 @@ class Wallet implements ResourceInterface {
      */
     public function transactions($walletId)
     {
-        $response = $this->request->call($this->actions['wallets'] . $walletId . $this->actions['transactions'], 'GET');
+        $response = $this->request->execute($this->actions['wallets'] . $walletId . $this->actions['transactions'], 'GET');
         return $response->get();
     }
     
@@ -100,7 +100,7 @@ class Wallet implements ResourceInterface {
             'amount' => $amount
         );
         
-        $response = $this->request->call($this->actions['wallets'] . $sourceId . $this->actions['transfer'] . $targetId . '/', 'POST', $data);
+        $response = $this->request->execute($this->actions['wallets'] . $sourceId . $this->actions['transfer'] . $targetId . '/', 'POST', $data);
         return $response->get();
     }
     
@@ -111,7 +111,7 @@ class Wallet implements ResourceInterface {
      */
     public function notifications($walletId)
     {
-        $response = $this->request->call($this->actions['wallets'] . $walletId . $this->actions['notifications'], 'GET');
+        $response = $this->request->execute($this->actions['wallets'] . $walletId . $this->actions['notifications'], 'GET');
         return $response->get();
     }
     
@@ -127,7 +127,7 @@ class Wallet implements ResourceInterface {
             'email' => $email
         );
         
-        $response = $this->request->call($this->actions['wallets'] . $walletId . $this->actions['notifications'], 'POST', $data);
+        $response = $this->request->execute($this->actions['wallets'] . $walletId . $this->actions['notifications'], 'POST', $data);
         return $response->get();
     }
     
@@ -139,7 +139,7 @@ class Wallet implements ResourceInterface {
      */
     public function deleteNotificationEmail($walletId, $emailId)
     {
-        $response = $this->request->call($this->actions['wallets'] . $walletId . $this->actions['notifications'] . $emailId, 'DELETE');
+        $response = $this->request->execute($this->actions['wallets'] . $walletId . $this->actions['notifications'] . $emailId, 'DELETE');
         return $response->get();
     }
 }

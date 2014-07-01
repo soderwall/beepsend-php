@@ -38,7 +38,7 @@ class Connection implements ResourceInterface {
      */
     public function all()
     {
-        $response = $this->request->call($this->actions['connections'], 'GET');
+        $response = $this->request->execute($this->actions['connections'], 'GET');
         return $response->get();
     }
     
@@ -49,7 +49,7 @@ class Connection implements ResourceInterface {
      */
     public function data($connection = 'me')
     {
-        $response = $this->request->call($this->actions['connections'] . $connection, 'GET');
+        $response = $this->request->execute($this->actions['connections'] . $connection, 'GET');
         return $response->get();
     }
     
@@ -61,7 +61,7 @@ class Connection implements ResourceInterface {
      */
     public function update($connection = 'me', $options = array())
     {
-        $response = $this->request->call($this->actions['connections'] . $connection, 'PUT', $options);
+        $response = $this->request->execute($this->actions['connections'] . $connection, 'PUT', $options);
         return $response->get();
     }
     
@@ -72,7 +72,7 @@ class Connection implements ResourceInterface {
      */
     public function resetToken($connection = 'me')
     {
-        $response = $this->request->call($this->actions['connections'] . $connection . $this->actions['tokenreset'], 'GET');
+        $response = $this->request->execute($this->actions['connections'] . $connection . $this->actions['tokenreset'], 'GET');
         return $response->get();
     }
     
@@ -83,7 +83,7 @@ class Connection implements ResourceInterface {
      */
     public function resetPassword($connection = 'me')
     {
-        $response = $this->request->call($this->actions['connections'] . $connection . $this->actions['passwordreset'], 'GET');
+        $response = $this->request->execute($this->actions['connections'] . $connection . $this->actions['passwordreset'], 'GET');
         return $response->get();
     }
     

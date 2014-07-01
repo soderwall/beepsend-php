@@ -51,7 +51,7 @@ class Analytic implements ResourceInterface {
             $data['to_date'] = $toDate;
         }
         
-        $response = $this->request->call($this->actions['summary'] . $connection, 'GET', $data);
+        $response = $this->request->execute($this->actions['summary'] . $connection, 'GET', $data);
         return $response->get();
     }
     
@@ -84,7 +84,7 @@ class Analytic implements ResourceInterface {
             $data['MNC'] = $MNC;
         }
         
-        $response = $this->request->call($this->actions['network'] . $connection, 'GET', $data);
+        $response = $this->request->execute($this->actions['network'] . $connection, 'GET', $data);
         return $response->get();
     }
     
@@ -94,7 +94,7 @@ class Analytic implements ResourceInterface {
      */
     public function batch($batchId = null)
     {
-        $response = $this->request->call($this->actions['batch'] . $batchId, 'GET');
+        $response = $this->request->execute($this->actions['batch'] . $batchId, 'GET');
         return $response->get();
     }
     

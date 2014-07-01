@@ -47,7 +47,7 @@ class Search implements ResourceInterface {
             $data['group_id'] = $groupId;
         }
         
-        $response = $this->request->call($this->actions['contacts'], 'GET', $data);
+        $response = $this->request->execute($this->actions['contacts'], 'GET', $data);
         return $response->get();
     }
     
@@ -62,7 +62,7 @@ class Search implements ResourceInterface {
             'query' => $query
         );
         
-        $response = $this->request->call($this->actions['groups'], 'GET', $data);
+        $response = $this->request->execute($this->actions['groups'], 'GET', $data);
         return $response->get();
     }
     

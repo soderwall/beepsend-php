@@ -39,7 +39,7 @@ class Hlr implements ResourceInterface {
      */
     public function intermediate($msisdn, $connection = 'me')
     {
-        $response = $this->request->call($this->actions['hlr'] . $msisdn, 'GET', array('connection' => $connection));
+        $response = $this->request->execute($this->actions['hlr'] . $msisdn, 'GET', array('connection' => $connection));
         return $response->get();
     }
     
@@ -50,7 +50,7 @@ class Hlr implements ResourceInterface {
      */
     public function bulk($msisdns)
     {
-        $response = $this->request->call($this->actions['hlr'], 'POST', array('msisdn' => $msisdns));
+        $response = $this->request->execute($this->actions['hlr'], 'POST', array('msisdn' => $msisdns));
         return $response->get();
     }
     
@@ -62,7 +62,7 @@ class Hlr implements ResourceInterface {
      */
     public function validate($msisdn, $connection = 'me')
     {
-        $response = $this->request->call($this->actions['validate'], 'POST', array('msisdn' => $msisdn, 'connection' => $connection));
+        $response = $this->request->execute($this->actions['validate'], 'POST', array('msisdn' => $msisdn, 'connection' => $connection));
         return $response->get();
     }
     
