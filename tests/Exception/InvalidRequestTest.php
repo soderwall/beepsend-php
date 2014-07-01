@@ -4,7 +4,6 @@ use Beepsend\Exception\InvalidRequest;
 
 class InvalidRequestTest extends PHPUnit_Framework_TestCase 
 {
-    private $response = array('errors' => array('Request you are trying is invalid.'));
     
     /**
      * Test throwing InvalidRequest exception
@@ -14,7 +13,7 @@ class InvalidRequestTest extends PHPUnit_Framework_TestCase
      */
     public function testInvalidRequestException()
     {
-        throw new InvalidRequest(json_encode($this->response), 20); // InternalErrors expects raw response from API
+        throw new InvalidRequest('Request you are trying is invalid.', 20); // InternalErrors expects raw response from API
     }
     
 }
