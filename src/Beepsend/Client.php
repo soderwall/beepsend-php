@@ -5,7 +5,6 @@ namespace Beepsend;
 use Beepsend\Request;
 
 use Beepsend\Exception\NotFoundResource;
-use Beepsend\Exception\CurlExtension;
 
 class Client {
     
@@ -23,7 +22,6 @@ class Client {
     /**
      * Init beepsend client
      * @param string $token User or Connection token to work with
-     * @throws CurlExtension
      */
     public function __construct($token)
     {
