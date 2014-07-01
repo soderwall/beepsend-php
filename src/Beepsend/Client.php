@@ -12,7 +12,7 @@ class Client {
     /**
      * Version of Beepsend PHP helper
      */
-    private $version = '0.1';
+    public $version = '0.1';
     
     /**
      * Beepsend request handler
@@ -27,11 +27,6 @@ class Client {
      */
     public function __construct($token)
     {
-        
-        if (!extension_loaded('curl')) {
-            throw new CurlExtension('In order to use Beepsend PHP SDK you need to have curl extension.');
-        }
-        
         $this->request = new Request($token);
     }
     
