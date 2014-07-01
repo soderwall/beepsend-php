@@ -61,7 +61,7 @@ class Request {
     public function call($action, $method = 'GET', $params = array())
     {
         if ($method == 'GET') {
-            $url = $this->appendParamsToUrl($url, $params);
+            $action = $this->appendParamsToUrl($action, $params);
         }
         
         $ch = curl_init($this->baseApiUrl . '/' . $this->version . $action);
