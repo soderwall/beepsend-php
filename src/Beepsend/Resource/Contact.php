@@ -3,7 +3,7 @@
 namespace Beepsend\Resource;
 
 use Beepsend\Request;
-use Beepsend\Resource\ResourceInterface;
+use Beepsend\ResourceInterface;
 use Beepsend\Exception\FileNotFound;
 
 class Contact implements ResourceInterface {
