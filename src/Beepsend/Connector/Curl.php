@@ -92,6 +92,13 @@ class Curl implements ConnectorInterface
         return $this->response($info, $response);
     }
     
+    /**
+     * Upload file to Beepsend API, currently supporting only POST method
+     * @param string $action Action that we are calling
+     * @param array $params Array of additional parameters
+     * @param string $rawData String using this for posting file content
+     * @return Beepsend\Response
+     */
     public function upload($action, $params, $rawData)
     {
         $ch = curl_init($this->baseApiUrl . '/' . $this->version . $action);
