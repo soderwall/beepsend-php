@@ -3,11 +3,6 @@
 namespace Beepsend\Connector;
 
 use Beepsend\ConnectorInterface;
-use Beepsend\Response;
-use Beepsend\Exception\InvalidToken;
-use Beepsend\Exception\InvalidRequest;
-use Beepsend\Exception\NotFound;
-use Beepsend\Exception\InternalError;
 
 class Curl implements ConnectorInterface 
 {
@@ -52,9 +47,7 @@ class Curl implements ConnectorInterface
      * @param string $action Action that we are calling
      * @param string $method Request method
      * @param array $params Array of additional parameters
-     * @return Beepsend\Response
-     * @throws NotFound
-     * @throws InvalidRequest
+     * @return array
      */
     public function execute($action, $method, $params)
     {
@@ -89,7 +82,7 @@ class Curl implements ConnectorInterface
         $info = curl_getinfo($ch);
         curl_close($ch);
         
-        return $this->response($info, $response);
+        return array('info' => $info, 'response' => $response);
     }
     
     /**
@@ -107,7 +100,7 @@ class Curl implements ConnectorInterface
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
         
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(    
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(   
             'Authorization: Token ' . $this->token,
             'Content-Type: application/x-www-form-urlencoded'
         ));
@@ -118,35 +111,7 @@ class Curl implements ConnectorInterface
         $info = curl_getinfo($ch);
         curl_close($ch);
         
-        return $this->response($info, $response);
-    }
-    
-    /**
-     * Return valid response based on respond from Beepsend API url
-     * @param array $info Curl info
-     * @param string $response Raw response from Beepsend API
-     * @return Beepsend\Response
-     * @throws InvalidToken
-     * @throws InvalidRequest
-     * @throws NotFound
-     * @throws InternalError
-     */
-    private function response($info, $response)
-    {
-        switch ((integer)$info['http_code']) {
-            case 200:
-            case 201:
-            case 204:
-                return new Response($response, $info);
-            case 401:
-                throw new InvalidToken('A valid user API-token is required.');
-            case 403:
-                throw new InvalidRequest($this->parseError($response));
-            case 404:
-                throw new NotFound('Call you are looking for not existing, this means that something is wrong with API or this SDK.');
-            case 500:
-                throw new InternalError('Something is wrong with API, please try again later.');
-        }
+        return array('info' => $info, 'response' => $response);
     }
     
     /**
@@ -161,44 +126,6 @@ class Curl implements ConnectorInterface
             return $url;
         }
         
-        return $url . '&' . http_build_query($parameters);
+        return $url . '?' . http_build_query($parameters);
     }
-    
-    /**
-     * Parse raw response
-     * @param string $rawResponse 
-     * @return string
-     */
-    private function parseError($rawResponse)
-    {
-        $errors = array();
-        $response = json_decode($rawResponse, true);
-        
-        if (isset($response['errors'])) {
-            $errors = $response['errors'];
-        } else if ($response[0]['errors']) {
-            $errors = $response[0]['errors'];
-        }
-        
-        return $this->joinErrros($errors);
-    }
-    
-    /**
-     * Create one string from array of errors
-     * @param array $errors
-     * @return string
-     */
-    private function joinErrros($errors)
-    {
-        $response = null;
-        
-        foreach ($errors as $error) {
-            $code = isset($error['code']) ? 'Code: ' . $error['code'] . ' ' : null;
-            $description = isset($error['description']) ? $error['description'] : $error;
-            $response .= $code . $description;
-        }
-        
-        return $response;
-    }
-    
 }
