@@ -47,19 +47,19 @@ class Request {
         }
         
         /* Detect connector that we will use */
-//        if (extension_loaded('curl')) {
-//            $connector = new Connector\Curl(
-//                    $this->version, 
-//                    $this->userAgent, 
-//                    $this->baseApiUrl, 
-//                    $token);
-////        } else {
+        if (extension_loaded('curl')) {
+            $connector = new Connector\Curl(
+                    $this->version, 
+                    $this->userAgent, 
+                    $this->baseApiUrl, 
+                    $token);
+        } else {
             $connector = new Connector\Stream(
                     $this->version, 
                     $this->userAgent, 
                     $this->baseApiUrl, 
                     $token);
-//        }
+        }
         
         $this->connector = $connector;
     }
