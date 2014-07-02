@@ -2,7 +2,11 @@
 
 namespace Beepsend;
 
+use Beepsend\Response;
 use Beepsend\Exception\InvalidToken;
+use Beepsend\Exception\InvalidRequest;
+use Beepsend\Exception\NotFound;
+use Beepsend\Exception\InternalError;
 
 class Request {
     
@@ -43,15 +47,19 @@ class Request {
         }
         
         /* Detect connector that we will use */
-        if (extension_loaded('curl')) {
-            $connector = new Connector\Curl(
+//        if (extension_loaded('curl')) {
+//            $connector = new Connector\Curl(
+//                    $this->version, 
+//                    $this->userAgent, 
+//                    $this->baseApiUrl, 
+//                    $token);
+////        } else {
+            $connector = new Connector\Stream(
                     $this->version, 
                     $this->userAgent, 
                     $this->baseApiUrl, 
                     $token);
-        } else {
-            $connector = new Connector\Stream();
-        }
+//        }
         
         $this->connector = $connector;
     }
@@ -65,7 +73,8 @@ class Request {
      */
     public function execute($action, $method = 'GET', $params = array())
     {
-        return $this->connector->execute($action, $method, $params);
+        $rawResponse = $this->connector->execute($action, $method, $params);
+        return $this->response($rawResponse['info'], $rawResponse['response']);
     }
     
     /**
@@ -77,7 +86,72 @@ class Request {
      */
     public function upload($action, $params = array(), $rawData = '')
     {
-        return $this->connector->upload($action, $params, $rawData);
+        $rawResponse = $this->connector->upload($action, $params, $rawData);
+        return $this->response($rawResponse['info'], $rawResponse['response']);
     }
     
+    /**
+     * Return valid response based on respond from Beepsend API url
+     * @param array $info Curl info
+     * @param string $response Raw response from Beepsend API
+     * @return Beepsend\Response
+     * @throws InvalidToken
+     * @throws InvalidRequest
+     * @throws NotFound
+     * @throws InternalError
+     */
+    private function response($info, $response)
+    {
+        switch ($info['http_code']) {
+            case 200:
+            case 201:
+            case 204:
+                return new Response($response, $info);
+            case 401:
+                throw new InvalidToken('A valid user API-token is required.');
+            case 403:
+                throw new InvalidRequest($this->parseError($response));
+            case 404:
+                throw new NotFound('Call you are looking for not existing, this means that something is wrong with API or this SDK.');
+            case 500:
+                throw new InternalError('Something is wrong with API, please try again later.');
+        }
+    }
+    
+    /**
+     * Parse raw response
+     * @param string $rawResponse 
+     * @return string
+     */
+    private function parseError($rawResponse)
+    {
+        $errors = array();
+        $response = json_decode($rawResponse, true);
+        
+        if (isset($response['errors'])) {
+            $errors = $response['errors'];
+        } else if ($response[0]['errors']) {
+            $errors = $response[0]['errors'];
+        }
+        
+        return $this->joinErrros($errors);
+    }
+    
+    /**
+     * Create one string from array of errors
+     * @param array $errors
+     * @return string
+     */
+    private function joinErrros($errors)
+    {
+        $response = null;
+        
+        foreach ($errors as $error) {
+            $code = isset($error['code']) ? 'Code: ' . $error['code'] . ' ' : null;
+            $description = isset($error['description']) ? $error['description'] : $error;
+            $response .= $code . $description;
+        }
+        
+        return $response;
+    }
 }

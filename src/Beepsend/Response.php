@@ -29,7 +29,7 @@ class Response {
      */
     public function __construct($rawResponse, $info)
     {
-        $this->contentType = $info['content_type'];
+        $this->contentType = $info['content_type'] ? $info['content_type'] : $info['Content-Type'];
         $this->rawResponse = $rawResponse;
         
         if ($this->contentType == 'application/json') {
