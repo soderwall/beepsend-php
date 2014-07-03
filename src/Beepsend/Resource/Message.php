@@ -104,6 +104,35 @@ class Message implements ResourceInterface {
     }
     
     /**
+     * Send new binary SMS
+     * @param int|string $to Number where we are sending message, for multiple recepiants use array (number1, number2)
+     * @param int|array $from Number we are sending from or text
+     * @param string $message Message we are sending
+     * @param string $connection Connection id to use for sending sms
+     * @param string $encoding Encoding of message UTF-8, ISO-8859-15 or Unicode
+     * @param array $options Array of additional options. More info on: http://api.beepsend.com/docs.html#send-sms-binary
+     * @return array
+     */
+    public function binary($to, $from, $message, $connection = null, $options = array())
+    {
+        $data = array(
+            'from' => $from,
+            'to' => $to,
+            'message' => $message,
+            'receive_dlr' => 0,
+            'message_type' => 'binary'
+        );
+                
+        /* Merge additional options if we have */
+        if (!empty($options)) {
+            $data = array_merge($data, $options);
+        }
+        
+        $response = $this->request->execute($this->actions['sms'] . $connection, 'POST', $data);
+        return $response->get();
+    }
+    
+    /**
      * Get message details of sent messages through Beepsend
      * @param int $smsId Id of message
      */
