@@ -39,7 +39,7 @@ class Pricelist implements ResourceInterface {
     public function get($conection = 'me')
     {
         $response = $this->request->execute($this->actions['connections'] . $conection . $this->actions['pricelists'], 'GET');
-        return $response->get();
+        return $response;
     }
     
     /**

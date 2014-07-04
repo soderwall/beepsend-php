@@ -52,7 +52,7 @@ class Analytic implements ResourceInterface {
         }
         
         $response = $this->request->execute($this->actions['summary'] . $connection, 'GET', $data);
-        return $response->get();
+        return $response;
     }
     
     /**
@@ -85,7 +85,7 @@ class Analytic implements ResourceInterface {
         }
         
         $response = $this->request->execute($this->actions['network'] . $connection, 'GET', $data);
-        return $response->get();
+        return $response;
     }
     
     /**
@@ -95,7 +95,7 @@ class Analytic implements ResourceInterface {
     public function batch($batchId = null)
     {
         $response = $this->request->execute($this->actions['batch'] . $batchId, 'GET');
-        return $response->get();
+        return $response;
     }
     
 }

@@ -48,7 +48,7 @@ class Search implements ResourceInterface {
         }
         
         $response = $this->request->execute($this->actions['contacts'], 'GET', $data);
-        return $response->get();
+        return $response;
     }
     
     /**
@@ -63,7 +63,7 @@ class Search implements ResourceInterface {
         );
         
         $response = $this->request->execute($this->actions['groups'], 'GET', $data);
-        return $response->get();
+        return $response;
     }
     
 }

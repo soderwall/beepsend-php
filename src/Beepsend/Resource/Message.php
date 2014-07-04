@@ -59,7 +59,7 @@ class Message implements ResourceInterface {
         }
         
         $response = $this->request->execute($this->actions['sms'] . $connection, 'POST', $data);
-        return $response->get();
+        return $response;
     }
     
     /**
@@ -88,7 +88,7 @@ class Message implements ResourceInterface {
         }
         
         $response = $this->request->execute($this->actions['batches'] . $connection, 'POST', $data);
-        return $response->get();
+        return $response;
     }
     
     /**
@@ -100,7 +100,7 @@ class Message implements ResourceInterface {
     public function batch($messages, $connection = null)
     {
         $response = $this->request->execute($this->actions['sms'] . $connection, 'POST', $messages);
-        return $response->get();
+        return $response;
     }
     
     /**
@@ -129,7 +129,7 @@ class Message implements ResourceInterface {
         }
         
         $response = $this->request->execute($this->actions['sms'] . $connection, 'POST', $data);
-        return $response->get();
+        return $response;
     }
     
     /**
@@ -139,7 +139,7 @@ class Message implements ResourceInterface {
     public function lookup($smsId)
     {
         $response = $this->request->execute($this->actions['sms'] . $smsId, 'GET');
-        return $response->get();
+        return $response;
     }
     
     /**
@@ -149,7 +149,7 @@ class Message implements ResourceInterface {
     public function multipleLookup($options = array())
     {
         $response = $this->request->execute($this->actions['sms'], 'GET', $options);
-        return $response->get();
+        return $response;
     }
     
     /**
@@ -178,7 +178,7 @@ class Message implements ResourceInterface {
         }
         
         $response = $this->request->execute($this->actions['validate'] . $connection, 'POST', $data);
-        return $response->get();
+        return $response;
     }
     
     /**
@@ -188,7 +188,7 @@ class Message implements ResourceInterface {
     public function batches()
     {
         $response = $this->request->execute($this->actions['batches'], 'GET');
-        return $response->get();
+        return $response;
     }
     
     /**
@@ -208,7 +208,7 @@ class Message implements ResourceInterface {
         );
         
         $response = $this->request->execute($this->actions['sms'] . $this->actions['estimation'] . $connection, 'POST', $data);
-        return $response->get();
+        return $response;
     }
     
     /**
@@ -227,7 +227,7 @@ class Message implements ResourceInterface {
         );
         
         $response = $this->request->execute($this->actions['sms'] . $this->actions['estimation'] . $connection, 'POST', $data);
-        return $response->get();
+        return $response;
     }
     
 }
