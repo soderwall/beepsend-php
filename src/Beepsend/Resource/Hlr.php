@@ -5,6 +5,10 @@ namespace Beepsend\Resource;
 use Beepsend\Request;
 use Beepsend\ResourceInterface;
 
+/**
+ * Beepsend HLR resource
+ * @package Beepsend
+ */
 class Hlr implements ResourceInterface {
     
     /**

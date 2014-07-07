@@ -2,6 +2,10 @@
 
 namespace Beepsend;
 
+/**
+ * Connector Interface
+ * @package Beepsend
+ */
 interface ConnectorInterface 
 {
     

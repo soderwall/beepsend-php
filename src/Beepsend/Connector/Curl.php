@@ -4,6 +4,10 @@ namespace Beepsend\Connector;
 
 use Beepsend\ConnectorInterface;
 
+/**
+ * Beepsend curl connector
+ * @package Beepsend
+ */
 class Curl implements ConnectorInterface 
 {
     

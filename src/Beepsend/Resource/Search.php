@@ -5,6 +5,10 @@ namespace Beepsend\Resource;
 use Beepsend\Request;
 use Beepsend\ResourceInterface;
 
+/**
+ * Beepsend search resource
+ * @package Beepsend
+ */
 class Search implements ResourceInterface {
     
     /**

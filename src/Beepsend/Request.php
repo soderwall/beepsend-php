@@ -8,6 +8,10 @@ use Beepsend\Exception\InvalidRequest;
 use Beepsend\Exception\NotFound;
 use Beepsend\Exception\InternalError;
 
+/**
+ * Beepsend request
+ * @package Beepsend
+ */
 class Request {
     
     /**

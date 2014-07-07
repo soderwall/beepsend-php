@@ -5,6 +5,10 @@ namespace Beepsend\Resource;
 use Beepsend\Request;
 use Beepsend\ResourceInterface;
 
+/**
+ * Beepsend user resource
+ * @package Beepsend
+ */
 class User implements ResourceInterface {
     
     /**

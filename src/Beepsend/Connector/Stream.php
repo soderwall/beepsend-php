@@ -4,6 +4,10 @@ namespace Beepsend\Connector;
 
 use Beepsend\ConnectorInterface;
 
+/**
+ * Beepsend stream connector
+ * @package Beepsend
+ */
 class Stream implements ConnectorInterface 
 {
     

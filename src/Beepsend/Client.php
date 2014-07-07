@@ -6,6 +6,10 @@ use Beepsend\Request;
 
 use Beepsend\Exception\NotFoundResource;
 
+/**
+ * Beepsend client
+ * @package Beepsend
+ */
 class Client {
     
     /**

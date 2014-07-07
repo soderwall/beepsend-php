@@ -2,6 +2,10 @@
 
 namespace Beepsend;
 
+/**
+ * Beepsend response
+ * @package Beepsend
+ */
 class Response {
     
     /**

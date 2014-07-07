@@ -5,6 +5,10 @@ namespace Beepsend\Resource;
 use Beepsend\Request;
 use Beepsend\ResourceInterface;
 
+/**
+ * Beepsend pricelist resource
+ * @package Beepsend
+ */
 class Pricelist implements ResourceInterface {
     
     /**

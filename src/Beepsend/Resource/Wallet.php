@@ -5,6 +5,10 @@ namespace Beepsend\Resource;
 use Beepsend\Request;
 use Beepsend\ResourceInterface;
 
+/**
+ * Beepsend wallet resource
+ * @package Beepsend
+ */
 class Wallet implements ResourceInterface {
     
     /**
