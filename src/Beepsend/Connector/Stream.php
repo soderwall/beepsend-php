@@ -65,7 +65,7 @@ class Stream implements ConnectorInterface
      * @param array $params Array of additional parameters
      * @return array
      */
-    public function execute($action, $method, $params)
+    public function call($action, $method, $params)
     {
         $options = array(
             'http' => array(

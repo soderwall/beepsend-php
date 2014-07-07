@@ -27,7 +27,7 @@ interface ConnectorInterface
      * @throws NotFound
      * @throws InvalidRequest
      */
-    public function execute($action, $method, $params);
+    public function call($action, $method, $params);
     
     /**
      * Method that will upload some file

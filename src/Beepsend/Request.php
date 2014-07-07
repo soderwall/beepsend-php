@@ -77,7 +77,7 @@ class Request {
      */
     public function execute($action, $method = 'GET', $params = array())
     {
-        $rawResponse = $this->connector->execute($action, $method, $params);
+        $rawResponse = $this->connector->call($action, $method, $params);
         return $this->response($rawResponse['info'], $rawResponse['response']);
     }
     

@@ -53,7 +53,7 @@ class Curl implements ConnectorInterface
      * @param array $params Array of additional parameters
      * @return array
      */
-    public function execute($action, $method, $params)
+    public function call($action, $method, $params)
     {
         if ($method == 'GET') {
             $action = $this->appendParamsToUrl($action, $params);
