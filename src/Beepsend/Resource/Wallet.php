@@ -79,10 +79,27 @@ class Wallet implements ResourceInterface {
     /**
      * Returns all transactions for wallet
      * @param int $walletId Wallet id
+     * @param string $sinceId Returns results more recent than the specified ID.
+     * @param string $maxId Returns results with an ID older than or equal to the specified ID.
+     * @param int $count How many objects to fetch. Maximum 200, default 200.
      * @return array
      */
-    public function transactions($walletId)
+    public function transactions($walletId, $sinceId = null, $maxId = null, $count = null)
     {
+        $data = array();
+        
+        if (!is_null($sinceId)) {
+            $data['since_id'] = $sinceId;
+        }
+        
+        if (!is_null($maxId)) {
+            $data['max_id'] = $maxId;
+        }
+        
+        if (!is_null($count)) {
+            $data['count'] = $count;
+        }
+        
         $response = $this->request->execute($this->actions['wallets'] . $walletId . $this->actions['transactions'], 'GET');
         return $response;
     }

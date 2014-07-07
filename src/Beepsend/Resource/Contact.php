@@ -110,14 +110,17 @@ class Contact implements ResourceInterface {
     
     /**
      * Get all contact groups belonging to your user.
+     * @param string $sinceId Returns results more recent than the specified ID.
+     * @param string $maxId Returns results with an ID older than or equal to the specified ID.
+     * @param int $count How many objects to fetch. Maximum 200, default 200.
      * @return array
      */
-    public function groups($sinceid = null, $maxId = null, $count = null)
+    public function groups($sinceId = null, $maxId = null, $count = null)
     {
         $data = array();
         
-        if (!is_null($sinceid)) {
-            $data['since_id'] = $sinceid;
+        if (!is_null($sinceId)) {
+            $data['since_id'] = $sinceId;
         }
         
         if (!is_null($maxId)) {
