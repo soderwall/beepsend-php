@@ -3,14 +3,13 @@
 namespace Beepsend\Resource;
 
 use Beepsend\Request;
-use Beepsend\ResourceInterface;
 use Beepsend\Exception\FileNotFound;
 
 /**
  * Beepsend contact resource
  * @package Beepsend
  */
-class Contact implements ResourceInterface {
+class Contact {
     
     /**
      * Beepsend request handler
