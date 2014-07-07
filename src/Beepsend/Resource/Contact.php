@@ -112,9 +112,23 @@ class Contact implements ResourceInterface {
      * Get all contact groups belonging to your user.
      * @return array
      */
-    public function groups()
+    public function groups($sinceid = null, $maxId = null, $count = null)
     {
-        $response = $this->request->execute($this->actions['groups'], 'GET');
+        $data = array();
+        
+        if (!is_null($sinceid)) {
+            $data['since_id'] = $sinceid;
+        }
+        
+        if (!is_null($maxId)) {
+            $data['max_id'] = $maxId;
+        }
+        
+        if (!is_null($count)) {
+            $data['count'] = $count;
+        }
+        
+        $response = $this->request->execute($this->actions['groups'], 'GET', $data);
         return $response;
     }
     
