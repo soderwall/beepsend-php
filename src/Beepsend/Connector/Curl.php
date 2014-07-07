@@ -2,7 +2,7 @@
 
 namespace Beepsend\Connector;
 
-use Beepsend\ConnectorInterface;
+use Beepsend\Connector\ConnectorInterface;
 
 /**
  * Beepsend curl connector
