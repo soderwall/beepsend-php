@@ -36,10 +36,10 @@ class Contact implements ResourceInterface {
     /**
      * Get all contacts belonging to your user.
      * @param string $group Group id or name
-     * @param string $sort Sorting of the dataset. Available keys: name, id. Can be prepended with + or - to change the sorting direction (+ ASC, - DESC).
+     * @param string $options Array of additional options. More info on: http://api.beepsend.com/docs.html#contacts
      * @return array
      */
-    public function all($group = null, $sort = null)
+    public function all($group = null, $options = array())
     {
         $data = array();
         
@@ -47,8 +47,9 @@ class Contact implements ResourceInterface {
             $data['group'] = $group;
         }
         
-        if (!is_null($sort)) {
-            $data['sort'] = $sort;
+        /* Merge additional options if we have */
+        if (!empty($options)) {
+            $data = array_merge($data, $options);
         }
         
         $response = $this->request->execute($this->actions['contacts'], 'GET', $data);
