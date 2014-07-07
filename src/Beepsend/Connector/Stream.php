@@ -207,16 +207,16 @@ class Stream implements ConnectorInterface
     /**
      * Append parameters to url, using for GET request.
      * @param string $url Url that we will call
-     * @param array $parameters Array of parameters
+     * @param array $params Array of parameters
      * @return string
      */
-    private function appendParamsToUrl($url, $parameters = array())
+    private function appendParamsToUrl($url, $params = array())
     {
-        if (empty($parameters)) {
+        if (empty($params)) {
             return $url;
         }
         
-        return $url . '?' . http_build_query($parameters);
+        return $url . '?' . http_build_query($params);
     }
     
 }
