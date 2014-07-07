@@ -50,8 +50,8 @@ class Pricelist {
      */
     public function download($connection)
     {
-        $response = $this->request->execute($this->actions['download'] . $connection . '.csv', 'GET');
-        return $response->getCsv($connection . '.csv');
+        $response = $this->request->download($connection . '.csv', $this->actions['download'] . $connection . '.csv', 'GET');
+        return $response;
     }
     
 }

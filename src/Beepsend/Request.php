@@ -78,7 +78,23 @@ class Request {
     public function execute($action, $method = 'GET', $params = array())
     {
         $rawResponse = $this->connector->call($action, $method, $params);
-        return $this->response($rawResponse['info'], $rawResponse['response']);
+        return $this->response($rawResponse['info'], $rawResponse['response'])->get();
+    }
+    
+    /**
+     * Make request over Beepsend API to download some file
+     * @param string $fileName Name of file
+     * @param string $action Action that we are calling
+     * @param string $method Request method
+     * @param array $params Array of additional parameters
+     * @return Beepsend\Response
+     */
+    public function download($fileName, $action, $method = 'GET', $params = array())
+    {
+        $rawResponse = $this->connector->call($action, $method, $params);
+        return $this->response($rawResponse['info'], $rawResponse['response'])
+                ->setFileName($fileName)
+                ->get();
     }
     
     /**
@@ -91,7 +107,7 @@ class Request {
     public function upload($action, $params = array(), $rawData = '')
     {
         $rawResponse = $this->connector->upload($action, $params, $rawData);
-        return $this->response($rawResponse['info'], $rawResponse['response']);
+        return $this->response($rawResponse['info'], $rawResponse['response'])->get();
     }
     
     /**
