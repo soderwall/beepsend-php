@@ -3,7 +3,7 @@
 namespace Beepsend\Resource;
 
 use Beepsend\Request;
-use Beepsend\Resource\ResourceInterface;
+use Beepsend\ResourceInterface;
 
 class Search implements ResourceInterface {
     
@@ -47,8 +47,8 @@ class Search implements ResourceInterface {
             $data['group_id'] = $groupId;
         }
         
-        $response = $this->request->call($this->actions['contacts'], 'GET', $data);
-        return $response->get();
+        $response = $this->request->execute($this->actions['contacts'], 'GET', $data);
+        return $response;
     }
     
     /**
@@ -62,8 +62,8 @@ class Search implements ResourceInterface {
             'query' => $query
         );
         
-        $response = $this->request->call($this->actions['groups'], 'GET', $data);
-        return $response->get();
+        $response = $this->request->execute($this->actions['groups'], 'GET', $data);
+        return $response;
     }
     
 }

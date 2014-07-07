@@ -6,6 +6,7 @@ use Beepsend\Response;
 use Beepsend\Exception\InvalidToken;
 use Beepsend\Exception\InvalidRequest;
 use Beepsend\Exception\NotFound;
+use Beepsend\Exception\InternalError;
 
 class Request {
     
@@ -28,10 +29,10 @@ class Request {
     private $baseApiUrl = 'https://api.beepsend.com';
     
     /**
-     * User or Connection token to authorize on Beepsend API
-     * @var string
+     * Connector that we will use to communicate with API
+     * @var Object
      */
-    private $token;
+    private $connector;
     
     /**
      * Set requred values for Beepsend request
@@ -45,7 +46,22 @@ class Request {
             throw new InvalidToken('Please set valid token!');
         }
         
-        $this->token = $token;
+        /* Detect connector that we will use */
+        if (extension_loaded('curl')) {
+            $connector = new Connector\Curl(
+                    $this->version, 
+                    $this->userAgent, 
+                    $this->baseApiUrl, 
+                    $token);
+        } else {
+            $connector = new Connector\Stream(
+                    $this->version, 
+                    $this->userAgent, 
+                    $this->baseApiUrl, 
+                    $token);
+        }
+        
+        $this->connector = $connector;
     }
     
     /**
@@ -54,55 +70,11 @@ class Request {
      * @param string $method Request method
      * @param array $params Array of additional parameters
      * @return Beepsend\Response
-     * @throws NotFound
-     * @throws InvalidRequest
      */
-    public function call($action, $method = 'GET', $params = array())
+    public function execute($action, $method = 'GET', $params = array())
     {
-        if ($method == 'GET') {
-            $url = $this->appendParamsToUrl($url, $params);
-        }
-        
-        $ch = curl_init($this->baseApiUrl . '/' . $this->version . $action);
-        curl_setopt($ch, CURLOPT_USERAGENT, $this->userAgent);
-        curl_setopt($ch, CURLOPT_HEADER, false);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
-        
-        /* Set authorization token */
-        $headers = array('Authorization: Token ' . $this->token);
-        
-        if ($method !== 'GET') {
-
-            $headers[] = 'Content-Type: application/json';
-            $headers[] = 'Content-Length: ' . strlen(json_encode($params));
-            
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($params));
-        }
-        
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        
-        if ($method == 'PUT' || $method == 'DELETE') {
-            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
-        }
-        
-        $response = curl_exec($ch);
-        $info = curl_getinfo($ch);
-        curl_close($ch);
-        
-        switch ((integer)$info['http_code']) {
-            case 200:
-            case 201:
-            case 204:
-                return new Response($response, $info);
-            case 401:
-                throw new InvalidToken('A valid user API-token is required.');
-            case 403:
-                throw new InvalidRequest($response);
-            case 404:
-                throw new NotFound('Call you are looking for not existing, this means that something is wrong with API or this SDK.');
-        }
-        
+        $rawResponse = $this->connector->execute($action, $method, $params);
+        return $this->response($rawResponse['info'], $rawResponse['response']);
     }
     
     /**
@@ -111,30 +83,26 @@ class Request {
      * @param array $params Array of additional parameters
      * @param string $rawData String using this for posting file content
      * @return Beepsend\Response
-     * @throws NotFound
-     * @throws InvalidRequest
-     * @throws InvalidToken
      */
     public function upload($action, $params = array(), $rawData = '')
     {
-        $ch = curl_init($this->baseApiUrl . '/' . $this->version . $action);
-        curl_setopt($ch, CURLOPT_USERAGENT, $this->userAgent);
-        curl_setopt($ch, CURLOPT_HEADER, false);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
-        
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(    
-            'Authorization: Token ' . $this->token,
-            'Content-Type: application/x-www-form-urlencoded'
-        ));
-        
-        curl_setopt($ch, CURLOPT_POSTFIELDS, count($params) > 0 ? $params : $rawData);
-        
-        $response = curl_exec($ch);
-        $info = curl_getinfo($ch);
-        curl_close($ch);
-        
-        switch ((integer)$info['http_code']) {
+        $rawResponse = $this->connector->upload($action, $params, $rawData);
+        return $this->response($rawResponse['info'], $rawResponse['response']);
+    }
+    
+    /**
+     * Return valid response based on respond from Beepsend API url
+     * @param array $info Curl info
+     * @param string $response Raw response from Beepsend API
+     * @return Beepsend\Response
+     * @throws InvalidToken
+     * @throws InvalidRequest
+     * @throws NotFound
+     * @throws InternalError
+     */
+    private function response($info, $response)
+    {
+        switch ($info['http_code']) {
             case 200:
             case 201:
             case 204:
@@ -142,25 +110,48 @@ class Request {
             case 401:
                 throw new InvalidToken('A valid user API-token is required.');
             case 403:
-                throw new InvalidRequest($response);
+                throw new InvalidRequest($this->parseError($response));
             case 404:
                 throw new NotFound('Call you are looking for not existing, this means that something is wrong with API or this SDK.');
+            case 500:
+                throw new InternalError('Something is wrong with API, please try again later.');
         }
     }
     
     /**
-     * Append parameters to url, using for GET request.
-     * @param string $url Url that we will call
-     * @param array $parameters Array of parameters
+     * Parse raw response
+     * @param string $rawResponse 
      * @return string
      */
-    private function appendParamsToUrl($url, $parameters = array())
+    private function parseError($rawResponse)
     {
-        if (empty($parameters)) {
-            return $url;
+        $errors = array();
+        $response = json_decode($rawResponse, true);
+        
+        if (isset($response['errors'])) {
+            $errors = $response['errors'];
+        } else if ($response[0]['errors']) {
+            $errors = $response[0]['errors'];
         }
         
-        return $url . '&' . http_build_query($parameters);
+        return $this->joinErrros($errors);
     }
     
+    /**
+     * Create one string from array of errors
+     * @param array $errors
+     * @return string
+     */
+    private function joinErrros($errors)
+    {
+        $response = null;
+        
+        foreach ($errors as $error) {
+            $code = isset($error['code']) ? 'Code: ' . $error['code'] . ' ' : null;
+            $description = isset($error['description']) ? $error['description'] : $error;
+            $response .= $code . $description;
+        }
+        
+        return $response;
+    }
 }

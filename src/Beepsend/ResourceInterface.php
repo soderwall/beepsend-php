@@ -1,6 +1,6 @@
 <?php
 
-namespace Beepsend\Resource;
+namespace Beepsend;
 
 use Beepsend\Request;
 

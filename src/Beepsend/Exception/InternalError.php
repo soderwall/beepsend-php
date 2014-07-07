@@ -3,9 +3,9 @@
 namespace Beepsend\Exception;
 
 /**
- * Throw when we can't find resource to load
+ * Throw when API returns internal error
  */
-final class CurlExtension extends \Exception
+final class InternalError extends \Exception
 {
     /**
      * @internal

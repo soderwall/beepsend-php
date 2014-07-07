@@ -1,0 +1,12 @@
+<phpunit 
+    colors                      = "true"
+    convertErrorsToExceptions   = "true"
+    convertNoticesToExceptions  = "true"
+    convertWarningsToExceptions = "true"
+    bootstrap                   = "./Bootstrap.php">
+  <testsuites>
+    <testsuite name="Beepsend PHP helper test suite">
+      <directory>./</directory>
+    </testsuite>
+  </testsuites>
+</phpunit>

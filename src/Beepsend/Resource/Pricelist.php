@@ -3,7 +3,7 @@
 namespace Beepsend\Resource;
 
 use Beepsend\Request;
-use Beepsend\Resource\ResourceInterface;
+use Beepsend\ResourceInterface;
 
 class Pricelist implements ResourceInterface {
     
@@ -38,8 +38,8 @@ class Pricelist implements ResourceInterface {
      */
     public function get($conection = 'me')
     {
-        $response = $this->request->call($this->actions['connections'] . $conection . $this->actions['pricelists'], 'GET');
-        return $response->get();
+        $response = $this->request->execute($this->actions['connections'] . $conection . $this->actions['pricelists'], 'GET');
+        return $response;
     }
     
     /**
@@ -47,7 +47,7 @@ class Pricelist implements ResourceInterface {
      */
     public function download($connection)
     {
-        $response = $this->request->call($this->actions['download'] . $connection . '.csv', 'GET');
+        $response = $this->request->execute($this->actions['download'] . $connection . '.csv', 'GET');
         return $response->getCsv($connection . '.csv');
     }
     

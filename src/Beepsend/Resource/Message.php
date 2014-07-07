@@ -3,7 +3,7 @@
 namespace Beepsend\Resource;
 
 use Beepsend\Request;
-use Beepsend\Resource\ResourceInterface;
+use Beepsend\ResourceInterface;
 
 class Message implements ResourceInterface {
     
@@ -35,15 +35,15 @@ class Message implements ResourceInterface {
     
     /**
      * Send new SMS
-     * @param int|string Number we are sending from or text
-     * @param int|array $to Number where we are sending message, for multiple recepiants use array (number1, number2)
+     * @param int|string $to Number where we are sending message, for multiple recepiants use array (number1, number2)
+     * @param int|array $from Number we are sending from or text
      * @param string $message Message we are sending
      * @param string $connection Connection id to use for sending sms
      * @param string $encoding Encoding of message UTF-8, ISO-8859-15 or Unicode
      * @param array $options Array of additional options. More info on: http://api.beepsend.com/docs.html#send-sms
      * @return array
      */
-    public function send($from, $to, $message, $connection = null, $encoding = 'UTF-8', $options = array())
+    public function send($to, $from, $message, $connection = null, $encoding = 'UTF-8', $options = array())
     {
         $data = array(
             'from' => $from,
@@ -58,21 +58,21 @@ class Message implements ResourceInterface {
             $data = array_merge($data, $options);
         }
         
-        $response = $this->request->call($this->actions['sms'] . $connection, 'POST', $data);
-        return $response->get();
+        $response = $this->request->execute($this->actions['sms'] . $connection, 'POST', $data);
+        return $response;
     }
     
     /**
      * Send SMS to your groups of contacts
-     * @param int|string Number we are sending from or text
      * @param int|array $groups Group where we are sending message, for multiple groups use array (number1, number2)
+     * @param int|string $from Number we are sending from or text
      * @param string $message Message we are sending
      * @param string $connection Connection id to use for sending sms
      * @param string $encoding Encoding of message UTF-8, ISO-8859-15 or Unicode
      * @param array $options Array of additional options. More info on: http://api.beepsend.com/docs.html#send-sms
      * @return array
      */
-    public function groupSending($from, $groups, $message, $connection = null, $encoding = 'UTF-8', $options = array())
+    public function group($groups, $from, $message, $connection = null, $encoding = 'UTF-8', $options = array())
     {
         $data = array(
             'from' => $from,
@@ -87,8 +87,49 @@ class Message implements ResourceInterface {
             $data = array_merge($data, $options);
         }
         
-        $response = $this->request->call($this->actions['batches'] . $connection, 'POST', $data);
-        return $response->get();
+        $response = $this->request->execute($this->actions['batches'] . $connection, 'POST', $data);
+        return $response;
+    }
+    
+    /**
+     * Send multiple messages to one or more receivers.
+     * @param array $messages Messages that we want to send
+     * @param string $connection Connection id to use for sending sms
+     * @link http://api.beepsend.com/docs.html#send-sms-batch More information about sending messages in batches
+     */
+    public function batch($messages, $connection = null)
+    {
+        $response = $this->request->execute($this->actions['sms'] . $connection, 'POST', $messages);
+        return $response;
+    }
+    
+    /**
+     * Send new binary SMS
+     * @param int|string $to Number where we are sending message, for multiple recepiants use array (number1, number2)
+     * @param int|array $from Number we are sending from or text
+     * @param string $message Message we are sending
+     * @param string $connection Connection id to use for sending sms
+     * @param string $encoding Encoding of message UTF-8, ISO-8859-15 or Unicode
+     * @param array $options Array of additional options. More info on: http://api.beepsend.com/docs.html#send-sms-binary
+     * @return array
+     */
+    public function binary($to, $from, $message, $connection = null, $options = array())
+    {
+        $data = array(
+            'from' => $from,
+            'to' => $to,
+            'message' => $message,
+            'receive_dlr' => 0,
+            'message_type' => 'binary'
+        );
+                
+        /* Merge additional options if we have */
+        if (!empty($options)) {
+            $data = array_merge($data, $options);
+        }
+        
+        $response = $this->request->execute($this->actions['sms'] . $connection, 'POST', $data);
+        return $response;
     }
     
     /**
@@ -97,8 +138,8 @@ class Message implements ResourceInterface {
      */
     public function lookup($smsId)
     {
-        $response = $this->request->call($this->actions['sms'] . $smsId, 'GET');
-        return $response->get();
+        $response = $this->request->execute($this->actions['sms'] . $smsId, 'GET');
+        return $response;
     }
     
     /**
@@ -107,8 +148,8 @@ class Message implements ResourceInterface {
      */
     public function multipleLookup($options = array())
     {
-        $response = $this->request->call($this->actions['sms'], 'GET', $options);
-        return $response->get();
+        $response = $this->request->execute($this->actions['sms'], 'GET', $options);
+        return $response;
     }
     
     /**
@@ -136,8 +177,8 @@ class Message implements ResourceInterface {
             $data = array_merge($data, $options);
         }
         
-        $response = $this->request->call($this->actions['validate'] . $connection, 'POST', $data);
-        return $response->get();
+        $response = $this->request->execute($this->actions['validate'] . $connection, 'POST', $data);
+        return $response;
     }
     
     /**
@@ -146,8 +187,8 @@ class Message implements ResourceInterface {
      */
     public function batches()
     {
-        $response = $this->request->call($this->actions['batches'], 'GET');
-        return $response->get();
+        $response = $this->request->execute($this->actions['batches'], 'GET');
+        return $response;
     }
     
     /**
@@ -166,8 +207,8 @@ class Message implements ResourceInterface {
             'encoding' => $encoding
         );
         
-        $response = $this->request->call($this->actions['sms'] . $this->actions['estimation'] . $connection, 'POST', $data);
-        return $response->get();
+        $response = $this->request->execute($this->actions['sms'] . $this->actions['estimation'] . $connection, 'POST', $data);
+        return $response;
     }
     
     /**
@@ -185,8 +226,8 @@ class Message implements ResourceInterface {
             'encoding' => $encoding
         );
         
-        $response = $this->request->call($this->actions['sms'] . $this->actions['estimation'] . $connection, 'POST', $data);
-        return $response->get();
+        $response = $this->request->execute($this->actions['sms'] . $this->actions['estimation'] . $connection, 'POST', $data);
+        return $response;
     }
     
 }

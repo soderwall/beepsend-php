@@ -3,7 +3,7 @@
 namespace Beepsend\Resource;
 
 use Beepsend\Request;
-use Beepsend\Resource\ResourceInterface;
+use Beepsend\ResourceInterface;
 
 class Customer implements ResourceInterface {
     
@@ -36,8 +36,8 @@ class Customer implements ResourceInterface {
      */
     public function data()
     {
-        $response = $this->request->call($this->actions['data'], 'GET');
-        return $response->get();
+        $response = $this->request->execute($this->actions['data'], 'GET');
+        return $response;
     }
     
 }
