@@ -15,12 +15,6 @@ class Response {
     private $contentType;
     
     /**
-     * Response from Beepsend API
-     * @var array
-     */
-    private $response;
-    
-    /**
      * Raw Response from Beepsend API
      * @var array
      */
