@@ -80,6 +80,7 @@ class Stream implements ConnectorInterface
         }
         
         $this->addHeader('Authorization', 'Token ' . $this->token);
+        $this->addHeader('User-agent', $this->userAgent);
         
         if ($method !== 'GET') {
             $this->addHeader('Content-Type', 'application/json');
