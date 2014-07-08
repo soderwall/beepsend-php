@@ -36,6 +36,18 @@ class Curl implements ConnectorInterface
     private $token;
     
     /**
+     * Array of request headers
+     * @var array
+     */
+    private $headers;
+    
+    /**
+     * Curl holder
+     * @var Object 
+     */
+    private $curl;
+    
+    /**
      * {@inheritdoc}
      */
     public function __construct($version, $userAgent, $baseApiUrl, $token)
@@ -57,34 +69,17 @@ class Curl implements ConnectorInterface
     {
         if ($method == 'GET') {
             $action = $this->appendParamsToUrl($action, $params);
+        } else {
+            $this->addHeader('Content-Type', 'application/json');
+            $this->addHeader('Content-Length', strlen(json_encode($params)));
         }
         
-        $ch = curl_init($this->baseApiUrl . '/' . $this->version . $action);
-        curl_setopt($ch, CURLOPT_USERAGENT, $this->userAgent);
-        curl_setopt($ch, CURLOPT_HEADER, false);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
+        $this->makeConnection($action, $method, json_encode($params));
         
-        /* Set authorization token */
-        $headers = array('Authorization: Token ' . $this->token);
+        $response = $this->makeRequest();
+        $info = $this->getCurlInfo();
         
-        if ($method !== 'GET') {
-
-            $headers[] = 'Content-Type: application/json';
-            $headers[] = 'Content-Length: ' . strlen(json_encode($params));
-            
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($params));
-        }
-        
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        
-        if ($method == 'PUT' || $method == 'DELETE') {
-            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
-        }
-        
-        $response = curl_exec($ch);
-        $info = curl_getinfo($ch);
-        curl_close($ch);
+        $this->closeConnection();
         
         return array('info' => $info, 'response' => $response);
     }
@@ -98,24 +93,95 @@ class Curl implements ConnectorInterface
      */
     public function upload($action, $params, $rawData)
     {
-        $ch = curl_init($this->baseApiUrl . '/' . $this->version . $action);
-        curl_setopt($ch, CURLOPT_USERAGENT, $this->userAgent);
-        curl_setopt($ch, CURLOPT_HEADER, false);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
+        $this->addHeader('Content-Type', 'application/x-www-form-urlencoded');
+        $this->makeConnection($action, 'POST', count($params) > 0 ? $params : $rawData);
         
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(   
-            'Authorization: Token ' . $this->token,
-            'Content-Type: application/x-www-form-urlencoded'
-        ));
+        $response = $this->makeRequest();
+        $info = $this->getCurlInfo();
         
-        curl_setopt($ch, CURLOPT_POSTFIELDS, count($params) > 0 ? $params : $rawData);
-        
-        $response = curl_exec($ch);
-        $info = curl_getinfo($ch);
-        curl_close($ch);
+        $this->closeConnection();
         
         return array('info' => $info, 'response' => $response);
+    }
+    
+    /**
+     * Make connection to Beepsend API
+     * @param string $action Action that we are calling
+     * @param string $method Request method
+     * @param array $params Array of additional parameters
+     */
+    private function makeConnection($action, $method, $params)
+    {
+        $options = array(
+            CURLOPT_USERAGENT => $this->userAgent,
+            CURLOPT_HEADER => false,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_BINARYTRANSFER => true
+        );
+        
+        if ($method !== 'GET') {
+            $options[CURLOPT_POSTFIELDS] = $params;
+        }
+        
+        if ($method == 'PUT' || $method == 'DELETE') {
+            $options[CURLOPT_CUSTOMREQUEST] = $method;
+        }
+        
+        $this->addHeader('Authorization', 'Token ' . $this->token);
+        $options[CURLOPT_HTTPHEADER] = $this->prepareHeaders();
+        
+        $this->curl = curl_init($this->baseApiUrl . '/' . $this->version . $action);
+        curl_setopt_array($this->curl, $options);
+    }
+    
+    /**
+     * Make request to server
+     * @return string
+     */
+    private function makeRequest()
+    {
+        return curl_exec($this->curl);
+    }
+    
+    /**
+     * Get curl info
+     * @return array
+     */
+    public function getCurlInfo()
+    {
+        return curl_getinfo($this->curl);
+    }
+    
+    /**
+     * Close curl conenction
+     */
+    private function closeConnection()
+    {
+        curl_close($this->curl);
+    }
+    
+    /**
+     * Add request header
+     * @param string $name Name of header
+     * @param string $value Valud of header
+     */
+    private function addHeader($name, $value)
+    {
+        $this->headers[$name] = $value;
+    }
+    
+    /**
+     * Return headers for request
+     * @return string
+     */
+    private function prepareHeaders()
+    {
+        $header = array();
+        foreach($this->headers as $n => $v) {
+          $header[] = $n . ': ' . $v;
+        }
+
+        return $header;
     }
     
     /**

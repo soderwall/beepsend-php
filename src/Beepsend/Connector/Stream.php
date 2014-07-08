@@ -67,30 +67,14 @@ class Stream implements ConnectorInterface
      */
     public function call($action, $method, $params)
     {
-        $options = array(
-            'http' => array(
-                'method' => $method,
-                'timeout' => 60,
-                'ignore_errors' => true
-            )
-        );
-        
         if ($method == 'GET') {
             $action = $this->appendParamsToUrl($action, $params);
-        }
-        
-        $this->addHeader('Authorization', 'Token ' . $this->token);
-        $this->addHeader('User-agent', $this->userAgent);
-        
-        if ($method !== 'GET') {
+        } else {
             $this->addHeader('Content-Type', 'application/json');
             $this->addHeader('Content-Length', strlen(json_encode($params)));
-            $options['http']['content'] = json_encode($params);
         }
         
-        $options['http']['header'] = $this->prepareHeaders();
-        
-        $context = $this->createStreamContext($options);
+        $context = $this->makeContext($method, json_encode($params));
         $response = $this->getContent($action, $context);
         $info = $this->formatHeadersToArray();
         
@@ -106,27 +90,40 @@ class Stream implements ConnectorInterface
      */
     public function upload($action, $params, $rawData)
     {
+        $this->addHeader('Content-type', 'application/x-www-form-urlencoded');
+        
+        $context = $this->makeContext('POST', count($params) > 0 ? $params : $rawData);
+        $response = $this->getContent($action, $context);
+        $info = $this->formatHeadersToArray();
+        
+        return array('info' => $info, 'response' => $response);
+    }
+    
+    /**
+     * Make connection to Beepsend API
+     * @param string $action Action that we are calling
+     * @param string $method Request method
+     * @param array $params Array of additional parameters
+     */
+    private function makeContext($method, $params)
+    {
         $options = array(
             'http' => array(
-                'method' => 'POST',
+                'method' => $method,
                 'timeout' => 60,
                 'ignore_errors' => true
             )
         );
         
-        $options['http']['content'] = count($params) > 0 ? $params : $rawData;
-        
         $this->addHeader('Authorization', 'Token ' . $this->token);
         $this->addHeader('User-agent', $this->userAgent);
-        $this->addHeader('Content-type', 'application/x-www-form-urlencoded');
+        
+        if ($method != 'GET') {
+            $options['http']['content'] = $params;
+        }
         
         $options['http']['header'] = $this->prepareHeaders();
-        
-        $context = $this->createStreamContext($options);
-        $response = $this->getContent($action, $context);
-        $info = $this->formatHeadersToArray();
-        
-        return array('info' => $info, 'response' => $response);
+        return $this->createStreamContext($options);
     }
     
     /**
