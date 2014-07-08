@@ -117,6 +117,7 @@ class Stream implements ConnectorInterface
         $options['http']['content'] = count($params) > 0 ? $params : $rawData;
         
         $this->addHeader('Authorization', 'Token ' . $this->token);
+        $this->addHeader('User-agent', $this->userAgent);
         $this->addHeader('Content-type', 'application/x-www-form-urlencoded');
         
         $options['http']['header'] = $this->prepareHeaders();
