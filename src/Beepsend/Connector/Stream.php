@@ -10,31 +10,6 @@ use Beepsend\Connector\ConnectorInterface;
  */
 class Stream implements ConnectorInterface 
 {
-    
-    /**
-     * Beepsend API version
-     * @var int
-     */
-    private $version;
-    
-    /**
-     * Beepsend PHP library user agent
-     * @var string
-     */
-    private $userAgent;
-    
-    /**
-     * Beepsend API url
-     * @var string
-     */
-    private $baseApiUrl;
-    
-    /**
-     * User or Connection token to authorize on Beepsend API
-     * @var string
-     */
-    private $token;
-    
     /**
      * Array of request headers
      * @var array
@@ -48,34 +23,23 @@ class Stream implements ConnectorInterface
     private $responseHeaders;
     
     /**
-     * {@inheritdoc}
-     */
-    public function __construct($version, $userAgent, $baseApiUrl, $token)
-    {
-        $this->version = $version;
-        $this->userAgent = $userAgent;
-        $this->baseApiUrl = $baseApiUrl;
-        $this->token = $token;
-    }
-    
-    /**
      * Make some request over Beepsend API, supporting GET, POST, PUT and DELETE methods
-     * @param string $action Action that we are calling
+     * @param string $url Beepsend API url that we are calling
      * @param string $method Request method
      * @param array $params Array of additional parameters
      * @return array
      */
-    public function call($action, $method, $params)
+    public function call($url, $method, $params)
     {
         if ($method == 'GET') {
-            $action = $this->appendParamsToUrl($action, $params);
+            $url = $this->appendParamsToUrl($url, $params);
         } else {
             $this->addHeader('Content-Type', 'application/json');
             $this->addHeader('Content-Length', strlen(json_encode($params)));
         }
         
         $context = $this->makeContext($method, json_encode($params));
-        $response = $this->getContent($action, $context);
+        $response = $this->getContent($url, $context);
         $info = $this->formatHeadersToArray();
         
         return array('info' => $info, 'response' => $response);
@@ -83,17 +47,17 @@ class Stream implements ConnectorInterface
     
     /**
      * Upload file to Beepsend API, currently supporting only POST method
-     * @param string $action Action that we are calling
+     * @param string $url Beepsend API url that we are calling
      * @param array $params Array of additional parameters
      * @param string $rawData String using this for posting file content
      * @return Beepsend\Response
      */
-    public function upload($action, $params, $rawData)
+    public function upload($url, $params, $rawData)
     {
         $this->addHeader('Content-type', 'application/x-www-form-urlencoded');
         
         $context = $this->makeContext('POST', count($params) > 0 ? $params : $rawData);
-        $response = $this->getContent($action, $context);
+        $response = $this->getContent($url, $context);
         $info = $this->formatHeadersToArray();
         
         return array('info' => $info, 'response' => $response);
@@ -131,7 +95,7 @@ class Stream implements ConnectorInterface
      * @param string $name Name of header
      * @param string $value Valud of header
      */
-    private function addHeader($name, $value)
+    public function addHeader($name, $value)
     {
         $this->headers[$name] = $value;
     }

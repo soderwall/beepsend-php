@@ -8,16 +8,6 @@ namespace Beepsend\Connector;
  */
 interface ConnectorInterface 
 {
-    
-    /**
-     * Set required data for connector to make request to Beepsend API
-     * @param int $version Beepsend API version
-     * @param string $userAgent Beepsend PHP helper user agent
-     * @param string $baseApiUrl Beepsend API Url
-     * @param string $token User or connection that we will use for authorization on Beepsend API
-     */
-    public function __construct($version, $userAgent, $baseApiUrl, $token);
-    
     /**
      * Method that will execute some call to Beepsend API
      * @param string $action Action that we are calling
@@ -40,5 +30,12 @@ interface ConnectorInterface
      * @throws InvalidToken
      */
     public function upload($action, $params, $rawData);
+    
+    /**
+     * Add new request header to connector
+     * @param string $name Name of header
+     * @param string $value Value of header
+     */
+    public function addHeader($name, $value);
     
 }

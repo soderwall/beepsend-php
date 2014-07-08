@@ -10,31 +10,6 @@ use Beepsend\Connector\ConnectorInterface;
  */
 class Curl implements ConnectorInterface 
 {
-    
-    /**
-     * Beepsend API version
-     * @var int
-     */
-    private $version;
-    
-    /**
-     * Beepsend PHP library user agent
-     * @var string
-     */
-    private $userAgent;
-    
-    /**
-     * Beepsend API url
-     * @var string
-     */
-    private $baseApiUrl;
-    
-    /**
-     * User or Connection token to authorize on Beepsend API
-     * @var string
-     */
-    private $token;
-    
     /**
      * Array of request headers
      * @var array
@@ -48,33 +23,22 @@ class Curl implements ConnectorInterface
     private $curl;
     
     /**
-     * {@inheritdoc}
-     */
-    public function __construct($version, $userAgent, $baseApiUrl, $token)
-    {
-        $this->version = $version;
-        $this->userAgent = $userAgent;
-        $this->baseApiUrl = $baseApiUrl;
-        $this->token = $token;
-    }
-
-    /**
      * Make some request over Beepsend API, supporting GET, POST, PUT and DELETE methods
-     * @param string $action Action that we are calling
+     * @param string $url Beepsend API url that we are calling
      * @param string $method Request method
      * @param array $params Array of additional parameters
      * @return array
      */
-    public function call($action, $method, $params)
+    public function call($url, $method, $params)
     {
         if ($method == 'GET') {
-            $action = $this->appendParamsToUrl($action, $params);
+            $url = $this->appendParamsToUrl($url, $params);
         } else {
             $this->addHeader('Content-Type', 'application/json');
             $this->addHeader('Content-Length', strlen(json_encode($params)));
         }
         
-        $this->makeConnection($action, $method, json_encode($params));
+        $this->makeConnection($url, $method, json_encode($params));
         
         $response = $this->makeRequest();
         $info = $this->getCurlInfo();
@@ -86,15 +50,15 @@ class Curl implements ConnectorInterface
     
     /**
      * Upload file to Beepsend API, currently supporting only POST method
-     * @param string $action Action that we are calling
+     * @param string $url Beepsend API url that we are calling
      * @param array $params Array of additional parameters
      * @param string $rawData String using this for posting file content
      * @return Beepsend\Response
      */
-    public function upload($action, $params, $rawData)
+    public function upload($url, $params, $rawData)
     {
         $this->addHeader('Content-Type', 'application/x-www-form-urlencoded');
-        $this->makeConnection($action, 'POST', count($params) > 0 ? $params : $rawData);
+        $this->makeConnection($url, 'POST', count($params) > 0 ? $params : $rawData);
         
         $response = $this->makeRequest();
         $info = $this->getCurlInfo();
@@ -106,14 +70,13 @@ class Curl implements ConnectorInterface
     
     /**
      * Make connection to Beepsend API
-     * @param string $action Action that we are calling
+     * @param string $url Beepsend API url that we are calling
      * @param string $method Request method
      * @param array $params Array of additional parameters
      */
-    private function makeConnection($action, $method, $params)
+    private function makeConnection($url, $method, $params)
     {
         $options = array(
-            CURLOPT_USERAGENT => $this->userAgent,
             CURLOPT_HEADER => false,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_BINARYTRANSFER => true
@@ -127,10 +90,9 @@ class Curl implements ConnectorInterface
             $options[CURLOPT_CUSTOMREQUEST] = $method;
         }
         
-        $this->addHeader('Authorization', 'Token ' . $this->token);
         $options[CURLOPT_HTTPHEADER] = $this->prepareHeaders();
         
-        $this->curl = curl_init($this->baseApiUrl . '/' . $this->version . $action);
+        $this->curl = curl_init($url);
         curl_setopt_array($this->curl, $options);
     }
     
@@ -165,7 +127,7 @@ class Curl implements ConnectorInterface
      * @param string $name Name of header
      * @param string $value Valud of header
      */
-    private function addHeader($name, $value)
+    public function addHeader($name, $value)
     {
         $this->headers[$name] = $value;
     }
