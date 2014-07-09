@@ -95,4 +95,29 @@ class UserTest extends PHPUnit_Framework_TestCase
         $this->assertInternalType('array', $user);
     }
     
+    /**
+     * Test updating user password
+     */
+    public function testUpdatingUserPassword()
+    {
+        $connector = \Mockery::mock(new Curl());
+        $connector->shouldReceive('call')
+                    ->with('https://api.beepsend.com/2/users/me/password', 
+                            'PUT', 
+                            array('password' => 'supersecret', 'new_password' => 'donotlookplease'))
+                    ->once()
+                    ->andReturn(array(
+                        'info' => array(
+                            'http_code' => 204,
+                            'Content-Type' => 'application/json'
+                        ),
+                        'response' => json_encode(array())
+                    ));
+        
+        $client = new Client('abc123', $connector);
+        $user = $client->user->updatePassword('donotlookplease', 'supersecret');
+        
+        $this->assertInternalType('array', $user);
+    }
+    
 }
