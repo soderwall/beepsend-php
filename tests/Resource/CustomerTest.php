@@ -26,9 +26,10 @@ class CustomerTest extends PHPUnit_Framework_TestCase
                         ))
                     ));
         
-        $client = new Client('BeepsendToken', $connector);
+        $client = new Client('abc123', $connector);
         $customer = $client->customer->data();
-        
+
+        $this->assertInternalType('array', $customer);
         $this->assertEquals(1, $customer['id']);
         $this->assertEquals('Beepsend AB', $customer['name']);
     }
