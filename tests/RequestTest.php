@@ -30,7 +30,7 @@ class RequestTest extends PHPUnit_Framework_TestCase
     public function testGettingBaseApiUrl()
     {
         $request = new Request('SomeSecretToken', new Curl());
-        $this->assertEquals('https://api.beepsend.com', $request->getBaseApiUrl());
+        $this->assertEquals(BASE_API_URL, $request->getBaseApiUrl());
     }
     
     /**

@@ -12,7 +12,7 @@ class AnalyticsTest extends PHPUnit_Framework_TestCase
     {
         $connector = \Mockery::mock(new Curl());
         $connector->shouldReceive('call')
-                    ->with('https://api.beepsend.com/2/analytics/summary/me', 'GET', array())
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/analytics/summary/me', 'GET', array())
                     ->once()
                     ->andReturn(array(
                         'info' => array(
@@ -42,7 +42,7 @@ class AnalyticsTest extends PHPUnit_Framework_TestCase
     {
         $connector = \Mockery::mock(new Curl());
         $connector->shouldReceive('call')
-                    ->with('https://api.beepsend.com/2/analytics/network/me', 'GET', array())
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/analytics/network/me', 'GET', array())
                     ->once()
                     ->andReturn(array(
                         'info' => array(
@@ -82,7 +82,7 @@ class AnalyticsTest extends PHPUnit_Framework_TestCase
     {
         $connector = \Mockery::mock(new Curl());
         $connector->shouldReceive('call')
-                    ->with('https://api.beepsend.com/2/analytics/batches/789456', 'GET', array())
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/analytics/batches/789456', 'GET', array())
                     ->once()
                     ->andReturn(array(
                         'info' => array(

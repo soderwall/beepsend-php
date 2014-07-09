@@ -13,7 +13,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
     {
         $connector = \Mockery::mock(new Curl());
         $connector->shouldReceive('call')
-                    ->with('https://api.beepsend.com/2/connections/', 'GET', array())
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/connections/', 'GET', array())
                     ->once()
                     ->andReturn(array(
                         'info' => array(
@@ -49,7 +49,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
     {
         $connector = \Mockery::mock(new Curl());
         $connector->shouldReceive('call')
-                    ->with('https://api.beepsend.com/2/connections/me', 'GET', array())
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/connections/me', 'GET', array())
                     ->once()
                     ->andReturn(array(
                         'info' => array(
@@ -83,7 +83,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
     {
         $connector = \Mockery::mock(new Curl());
         $connector->shouldReceive('call')
-                    ->with('https://api.beepsend.com/2/connections/me', 'PUT', array(
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/connections/me', 'PUT', array(
                         'callbacks' => array(
                             'dlr' => 'https://beepsend.com/securedlr'
                         ),
@@ -144,7 +144,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
     {
         $connector = \Mockery::mock(new Curl());
         $connector->shouldReceive('call')
-                    ->with('https://api.beepsend.com/2/connections/me/tokenreset', 'GET', array())
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/connections/me/tokenreset', 'GET', array())
                     ->once()
                     ->andReturn(array(
                         'info' => array(
@@ -170,7 +170,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
     {
         $connector = \Mockery::mock(new Curl());
         $connector->shouldReceive('call')
-                    ->with('https://api.beepsend.com/2/connections/me/passwordreset', 'GET', array())
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/connections/me/passwordreset', 'GET', array())
                     ->once()
                     ->andReturn(array(
                         'info' => array(

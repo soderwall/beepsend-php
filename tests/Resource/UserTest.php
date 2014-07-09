@@ -13,7 +13,7 @@ class UserTest extends PHPUnit_Framework_TestCase
     {
         $connector = \Mockery::mock(new Curl());
         $connector->shouldReceive('call')
-                    ->with('https://api.beepsend.com/2/users/me', 'GET', array())
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/users/me', 'GET', array())
                     ->once()
                     ->andReturn(array(
                         'info' => array(
@@ -45,7 +45,7 @@ class UserTest extends PHPUnit_Framework_TestCase
     {
         $connector = \Mockery::mock(new Curl());
         $connector->shouldReceive('call')
-                    ->with('https://api.beepsend.com/2/users/me', 'PUT', array('name' => 'New Beepsend'))
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/users/me', 'PUT', array('name' => 'New Beepsend'))
                     ->once()
                     ->andReturn(array(
                         'info' => array(
@@ -77,7 +77,7 @@ class UserTest extends PHPUnit_Framework_TestCase
     {
         $connector = \Mockery::mock(new Curl());
         $connector->shouldReceive('call')
-                    ->with('https://api.beepsend.com/2/users/me/email', 
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/users/me/email', 
                             'PUT', 
                             array('email' => 'new@beepsend.com', 'password' => 'supersecret'))
                     ->once()
@@ -102,7 +102,7 @@ class UserTest extends PHPUnit_Framework_TestCase
     {
         $connector = \Mockery::mock(new Curl());
         $connector->shouldReceive('call')
-                    ->with('https://api.beepsend.com/2/users/me/password', 
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/users/me/password', 
                             'PUT', 
                             array('password' => 'supersecret', 'new_password' => 'donotlookplease'))
                     ->once()
@@ -127,7 +127,7 @@ class UserTest extends PHPUnit_Framework_TestCase
     {
         $connector = \Mockery::mock(new Curl());
         $connector->shouldReceive('call')
-                    ->with('https://api.beepsend.com/2/users/passwordreset', 
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/users/passwordreset', 
                             'GET', 
                             array('email' => 'myemail@beepsend.com'))
                     ->once()
@@ -152,7 +152,7 @@ class UserTest extends PHPUnit_Framework_TestCase
     {
         $connector = \Mockery::mock(new Curl());
         $connector->shouldReceive('call')
-                    ->with('https://api.beepsend.com/2/users/password/abchash', 
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/users/password/abchash', 
                             'PUT', 
                             array('password' => 'mynewpassword'))
                     ->once()
@@ -186,7 +186,7 @@ class UserTest extends PHPUnit_Framework_TestCase
     {
         $connector = \Mockery::mock(new Curl());
         $connector->shouldReceive('call')
-                    ->with('https://api.beepsend.com/2/users/me/tokenreset', 
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/users/me/tokenreset', 
                             'GET', 
                             array('password' => 'supersecret'))
                     ->once()
@@ -211,7 +211,7 @@ class UserTest extends PHPUnit_Framework_TestCase
     {
         $connector = \Mockery::mock(new Curl());
         $connector->shouldReceive('call')
-                    ->with('https://api.beepsend.com/2/users/email/abchash', 
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/users/email/abchash', 
                             'GET', 
                             array())
                     ->once()
@@ -233,7 +233,7 @@ class UserTest extends PHPUnit_Framework_TestCase
     {
         $connector = \Mockery::mock(new Curl());
         $connector->shouldReceive('call')
-                    ->with('https://api.beepsend.com/2/users/phone/abchash', 
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/users/phone/abchash', 
                             'GET', 
                             array())
                     ->once()

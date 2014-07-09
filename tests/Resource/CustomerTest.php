@@ -13,7 +13,7 @@ class CustomerTest extends PHPUnit_Framework_TestCase
     {
         $connector = \Mockery::mock(new Curl());
         $connector->shouldReceive('call')
-                    ->with('https://api.beepsend.com/2/customer/', 'GET', array())
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/customer/', 'GET', array())
                     ->once()
                     ->andReturn(array(
                         'info' => array(

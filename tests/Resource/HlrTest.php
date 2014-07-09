@@ -12,7 +12,7 @@ class HlrTest extends PHPUnit_Framework_TestCase
     {
         $connector = \Mockery::mock(new Curl());
         $connector->shouldReceive('call')
-                    ->with('https://api.beepsend.com/2/hlr/123456789', 'GET', array(
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/hlr/123456789', 'GET', array(
                         'connection' => 'me'
                     ))
                     ->once()
@@ -58,7 +58,7 @@ class HlrTest extends PHPUnit_Framework_TestCase
     {
         $connector = \Mockery::mock(new Curl());
         $connector->shouldReceive('call')
-                    ->with('https://api.beepsend.com/2/hlr/', 'POST', array(
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/hlr/', 'POST', array(
                         'msisdn' => array(46736007518, 46736007505)
                     ))
                     ->once()
@@ -100,7 +100,7 @@ class HlrTest extends PHPUnit_Framework_TestCase
     {
         $connector = \Mockery::mock(new Curl());
         $connector->shouldReceive('call')
-                    ->with('https://api.beepsend.com/2/hlr/validate', 'POST', array(
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/hlr/validate', 'POST', array(
                         'msisdn' => 46736007518,
                         'connection' => 'me'
                     ))
