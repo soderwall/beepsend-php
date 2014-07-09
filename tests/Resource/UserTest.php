@@ -158,7 +158,7 @@ class UserTest extends PHPUnit_Framework_TestCase
                     ->once()
                     ->andReturn(array(
                         'info' => array(
-                            'http_code' => 204,
+                            'http_code' => 200,
                             'Content-Type' => 'application/json'
                         ),
                         'response' => json_encode(array(
@@ -176,6 +176,34 @@ class UserTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(4, $user['id']);
         $this->assertEquals('Beep', $user['name']);
         $this->assertEquals('Beepsend AB', $user['customer']);
+        $this->assertEquals('abc123', $user['api_token']);
+    }
+    
+    /**
+     * Test reseting user token
+     */
+    public function testResetingUserToken()
+    {
+        $connector = \Mockery::mock(new Curl());
+        $connector->shouldReceive('call')
+                    ->with('https://api.beepsend.com/2/users/me/tokenreset', 
+                            'GET', 
+                            array('password' => 'supersecret'))
+                    ->once()
+                    ->andReturn(array(
+                        'info' => array(
+                            'http_code' => 200,
+                            'Content-Type' => 'application/json'
+                        ),
+                        'response' => json_encode(array(
+                            'api_token' => 'abc123'
+                        ))
+                    ));
+        
+        $client = new Client('abc123', $connector);
+        $user = $client->user->resetUserToken('supersecret');
+        
+        $this->assertInternalType('array', $user);
         $this->assertEquals('abc123', $user['api_token']);
     }
     
