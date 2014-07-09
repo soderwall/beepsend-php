@@ -74,4 +74,41 @@ class AnalyticsTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(12, $analytics['statistics']['expired']);
         $this->assertEquals(142, $analytics['total']);
     }
+    
+    /**
+     * Test getting delivery statistics for a whole batch
+     */
+    public function testBatch()
+    {
+        $connector = \Mockery::mock(new Curl());
+        $connector->shouldReceive('call')
+                    ->with('https://api.beepsend.com/2/analytics/batches/789456', 'GET', array())
+                    ->once()
+                    ->andReturn(array(
+                        'info' => array(
+                            'http_code' => 200,
+                            'Content-Type' => 'application/json'
+                        ),
+                        'response' => json_encode(array(
+                            'id' => 23,
+                            'label' => 'My batch',
+                            'total' => 142,
+                            'statistics' => array(
+                                'delivered' => 100,
+                                'expired' => 12
+                            )
+                        ))
+                    ));
+        
+        $client = new Client('abc123', $connector);
+        $analytics = $client->analytic->batch(789456);
+        
+        $this->assertInternalType('array', $analytics);
+        $this->assertInternalType('array', $analytics['statistics']);
+        $this->assertEquals(23, $analytics['id']);
+        $this->assertEquals('My batch', $analytics['label']);
+        $this->assertEquals(142, $analytics['total']);
+        $this->assertEquals(100, $analytics['statistics']['delivered']);
+        $this->assertEquals(12, $analytics['statistics']['expired']);
+    }
 }
