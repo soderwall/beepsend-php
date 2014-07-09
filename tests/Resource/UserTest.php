@@ -145,4 +145,38 @@ class UserTest extends PHPUnit_Framework_TestCase
         $this->assertInternalType('array', $user);
     }
     
+    /**
+     * Test setting new password with reset hash
+     */
+    public function testSettingNewPassword()
+    {
+        $connector = \Mockery::mock(new Curl());
+        $connector->shouldReceive('call')
+                    ->with('https://api.beepsend.com/2/users/password/abchash', 
+                            'PUT', 
+                            array('password' => 'mynewpassword'))
+                    ->once()
+                    ->andReturn(array(
+                        'info' => array(
+                            'http_code' => 204,
+                            'Content-Type' => 'application/json'
+                        ),
+                        'response' => json_encode(array(
+                            'id' => 4,
+                            'name' => 'Beep',
+                            'customer' => 'Beepsend AB',
+                            'api_token' => 'abc123'
+                        ))
+                    ));
+        
+        $client = new Client('abc123', $connector);
+        $user = $client->user->setNewPassword('abchash', 'mynewpassword');
+        
+        $this->assertInternalType('array', $user);
+        $this->assertEquals(4, $user['id']);
+        $this->assertEquals('Beep', $user['name']);
+        $this->assertEquals('Beepsend AB', $user['customer']);
+        $this->assertEquals('abc123', $user['api_token']);
+    }
+    
 }
