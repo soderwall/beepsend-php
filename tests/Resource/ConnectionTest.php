@@ -136,4 +136,56 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('https://beepsend.com/mocallback', $connection['callbacks']['mo']);
         $this->assertEquals('PUT', $connection['callbacks']['method']);
     }
+    
+    /**
+     * Test reseting token for connection
+     */
+    public function testResetingToken()
+    {
+        $connector = \Mockery::mock(new Curl());
+        $connector->shouldReceive('call')
+                    ->with('https://api.beepsend.com/2/connections/me/tokenreset', 'GET', array())
+                    ->once()
+                    ->andReturn(array(
+                        'info' => array(
+                            'http_code' => 200,
+                            'Content-Type' => 'application/json'
+                        ),
+                        'response' => json_encode(array(
+                            'api_token' => 'abc123',
+                        ))
+                    ));
+        
+        $client = new Client('abc123', $connector);
+        $connection = $client->connection->resetToken('me');
+        
+        $this->assertInternalType('array', $connection);
+        $this->assertEquals('abc123', $connection['api_token']);
+    }
+    
+    /**
+     * Test reseting password for connection
+     */
+    public function testResetingPassword()
+    {
+        $connector = \Mockery::mock(new Curl());
+        $connector->shouldReceive('call')
+                    ->with('https://api.beepsend.com/2/connections/me/passwordreset', 'GET', array())
+                    ->once()
+                    ->andReturn(array(
+                        'info' => array(
+                            'http_code' => 200,
+                            'Content-Type' => 'application/json'
+                        ),
+                        'response' => json_encode(array(
+                            'password' => 'abc12345',
+                        ))
+                    ));
+        
+        $client = new Client('abc123', $connector);
+        $connection = $client->connection->resetPassword('me');
+        
+        $this->assertInternalType('array', $connection);
+        $this->assertEquals('abc12345', $connection['password']);
+    }
 }
