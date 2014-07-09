@@ -70,4 +70,29 @@ class UserTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('abc123', $user['api_token']);
     }
     
+    /**
+     * Test updating user email address
+     */
+    public function testUpdatingUserEmail()
+    {
+        $connector = \Mockery::mock(new Curl());
+        $connector->shouldReceive('call')
+                    ->with('https://api.beepsend.com/2/users/me/email', 
+                            'PUT', 
+                            array('email' => 'new@beepsend.com', 'password' => 'supersecret'))
+                    ->once()
+                    ->andReturn(array(
+                        'info' => array(
+                            'http_code' => 204,
+                            'Content-Type' => 'application/json'
+                        ),
+                        'response' => json_encode(array())
+                    ));
+        
+        $client = new Client('abc123', $connector);
+        $user = $client->user->updateEmail('new@beepsend.com', 'supersecret');
+        
+        $this->assertInternalType('array', $user);
+    }
+    
 }
