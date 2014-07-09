@@ -75,4 +75,65 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('abc123', $connection['api_token']);
         $this->assertEquals('Beepsend AB', $connection['customer']);
     }
+    
+    /**
+     * Test updating connection data
+     */
+    public function testUpdating()
+    {
+        $connector = \Mockery::mock(new Curl());
+        $connector->shouldReceive('call')
+                    ->with('https://api.beepsend.com/2/connections/me', 'PUT', array(
+                        'callbacks' => array(
+                            'dlr' => 'https://beepsend.com/securedlr'
+                        ),
+                        'system_id' => 'crossover',
+                        'label' => 'Pawnee-connection',
+                        'password' => 'cake',
+                        'description' => 'Cool. Cool, cool, cool'
+                    ))
+                    ->once()
+                    ->andReturn(array(
+                        'info' => array(
+                            'http_code' => 200,
+                            'Content-Type' => 'application/json'
+                        ),
+                        'response' => json_encode(array(
+                            'id' => 1,
+                            'system_id' => 'crossover',
+                            'label' => 'Pawnee-connection',
+                            'api_token' => 'abc123',
+                            'customer' => 'Beepsend AB',
+                            'description' => 'Cool. Cool, cool, cool',
+                            'callbacks' => array(
+                                'dlr' => 'https://beepsend.com/securedlr',
+                                'mo' => 'https://beepsend.com/mocallback',
+                                'method' => 'PUT'
+                            )
+                        ))
+                    ));
+        
+        $client = new Client('abc123', $connector);
+        $connection = $client->connection->update('me', array(
+            'callbacks' => array(
+                'dlr' => 'https://beepsend.com/securedlr'
+            ),
+            'system_id' => 'crossover',
+            'label' => 'Pawnee-connection',
+            'password' => 'cake',
+            'description' => 'Cool. Cool, cool, cool'
+        ));
+        
+        $this->assertInternalType('array', $connection);
+        $this->assertInternalType('array', $connection['callbacks']);
+        $this->assertEquals(1, $connection['id']);
+        $this->assertEquals('crossover', $connection['system_id']);
+        $this->assertEquals('Pawnee-connection', $connection['label']);
+        $this->assertEquals('abc123', $connection['api_token']);
+        $this->assertEquals('Beepsend AB', $connection['customer']);
+        $this->assertEquals('Cool. Cool, cool, cool', $connection['description']);
+        $this->assertEquals('https://beepsend.com/securedlr', $connection['callbacks']['dlr']);
+        $this->assertEquals('https://beepsend.com/mocallback', $connection['callbacks']['mo']);
+        $this->assertEquals('PUT', $connection['callbacks']['method']);
+    }
 }
