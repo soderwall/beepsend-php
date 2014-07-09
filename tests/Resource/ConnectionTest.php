@@ -42,4 +42,37 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('Beepsend AB', $connections[0]['customer']);
     }
     
+    /**
+     * Test getting data for single connection
+     */
+    public function testGettingData()
+    {
+        $connector = \Mockery::mock(new Curl());
+        $connector->shouldReceive('call')
+                    ->with('https://api.beepsend.com/2/connections/me', 'GET', array())
+                    ->once()
+                    ->andReturn(array(
+                        'info' => array(
+                            'http_code' => 200,
+                            'Content-Type' => 'application/json'
+                        ),
+                        'response' => json_encode(array(
+                            'id' => 1,
+                            'system_id' => 'beepsend',
+                            'label' => 'beepsend-connection',
+                            'api_token' => 'abc123',
+                            'customer' => 'Beepsend AB'
+                        ))
+                    ));
+        
+        $client = new Client('abc123', $connector);
+        $connection = $client->connection->data('me');
+        
+        $this->assertInternalType('array', $connection);
+        $this->assertEquals(1, $connection['id']);
+        $this->assertEquals('beepsend', $connection['system_id']);
+        $this->assertEquals('beepsend-connection', $connection['label']);
+        $this->assertEquals('abc123', $connection['api_token']);
+        $this->assertEquals('Beepsend AB', $connection['customer']);
+    }
 }
