@@ -24,7 +24,8 @@ class Wallet {
         'wallets' => '/wallets/',
         'transactions' => '/transactions/',
         'transfer' => '/transfer/',
-        'notifications' => '/emails/'
+        'notifications' => '/emails/',
+        'topup' => '/topup/paypal/'
     );
     
     /**
@@ -121,6 +122,31 @@ class Wallet {
         );
         
         $response = $this->request->execute($this->actions['wallets'] . $sourceId . $this->actions['transfer'] . $targetId . '/', 'POST', $data);
+        return $response;
+    }
+    
+    /**
+     * Add credit to wallet
+     * @param int $walletId Wallet add that we want to add credit
+     * @param int $amount Amount of money that we wan't to add
+     * @param string $returnUrl The URL to redirect a user when a payment is complete and successful. Default: https://beepsend.com/success.html
+     * @param string $cancleUrl The URL to redirect a user when a payment is aborted. Default: https://beepsend.com/cancel.html
+     */
+    public function topup($walletId, $amount, $returnUrl = null, $cancleUrl = null)
+    {
+        $data = array(
+            'amount' => $amount
+        );
+        
+        if (!is_null($returnUrl)) {
+            $data['url']['return'] = $returnUrl;
+        }
+        
+        if (!is_null($cancleUrl)) {
+            $data['url']['cacnle'] = $cancleUrl;
+        }
+        
+        $response = $this->request->execute($this->actions['wallets'] . $walletId . $this->actions['topup'], 'POST', $data);
         return $response;
     }
     
