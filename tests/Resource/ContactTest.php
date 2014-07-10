@@ -144,4 +144,50 @@ class ContactTest extends PHPUnit_Framework_TestCase
         
         $this->assertInternalType('array', $contact);
     }
+    
+    /**
+     * Test getting all groups
+     */
+    public function testGroups()
+    {
+        $connector = \Mockery::mock(new Curl());
+        $connector->shouldReceive('call')
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/contacts/groups/', 'GET', array())
+                    ->once()
+                    ->andReturn(array(
+                        'info' => array(
+                            'http_code' => 200,
+                            'Content-Type' => 'application/json'
+                        ),
+                        'response' => json_encode(array(
+                            array(
+                                'id' => 1,
+                                'name' => 'Customers',
+                                'contacts_count' => 27,
+                                'processing' => 1
+                            ),
+                            array(
+                                'id' => 2,
+                                'name' => 'Others',
+                                'contacts_count' => 2,
+                                'processing' => 0
+                            )
+                        ))
+                    ));
+        
+        $client = new Client('abc123', $connector);
+        $contact = $client->contact->groups();
+        
+        $this->assertInternalType('array', $contact);
+        $this->assertInternalType('array', $contact[0]);
+        $this->assertInternalType('array', $contact[1]);
+        $this->assertEquals(1, $contact[0]['id']);
+        $this->assertEquals('Customers', $contact[0]['name']);
+        $this->assertEquals(27, $contact[0]['contacts_count']);
+        $this->assertEquals(1, $contact[0]['processing']);
+        $this->assertEquals(2, $contact[1]['id']);
+        $this->assertEquals('Others', $contact[1]['name']);
+        $this->assertEquals(2, $contact[1]['contacts_count']);
+        $this->assertEquals(0, $contact[1]['processing']);
+    }
 }
