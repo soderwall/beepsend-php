@@ -258,4 +258,51 @@ class MessageTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(0.068, $message['price']);
     }
     
+    /**
+     * Test getting details for multiple messages
+     */
+    public function testMultipleLookup()
+    {
+        $connector = \Mockery::mock(new Curl());
+        $connector->shouldReceive('call')
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/sms/', 'GET', array())
+                    ->once()
+                    ->andReturn(array(
+                        'info' => array(
+                            'http_code' => 200,
+                            'Content-Type' => 'application/json'
+                        ),
+                        'response' => json_encode(array(
+                            array(
+                                'id' => 12345,
+                                'to' => array(
+                                    'address' => 46736007518,
+                                    'ton' => 1,
+                                    'npi' => 1
+                                ),
+                                'from' => array(
+                                    'address' => 'Beepsend',
+                                    'ton' => 1,
+                                    'npi' => 1
+                                ),
+                                'dlr' => array(
+                                    'status' => 'DELIVRD',
+                                    'error' => 0
+                                ),
+                                'price' => 0.068
+                            )
+                        ))
+                    ));
+        
+        $client = new Client('abc123', $connector);
+        $message = $client->message->multipleLookup();
+        
+        $this->assertInternalType('array', $message);
+        $this->assertEquals(12345, $message[0]['id']);
+        $this->assertEquals(46736007518, $message[0]['to']['address']);
+        $this->assertEquals('Beepsend', $message[0]['from']['address']);
+        $this->assertEquals('DELIVRD', $message[0]['dlr']['status']);
+        $this->assertEquals(0.068, $message[0]['price']);
+    }
+    
 }
