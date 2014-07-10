@@ -134,4 +134,48 @@ class WalletTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(200, $wallet[0]['change']);
     }
     
+    /**
+     * Test transfering found between wallets
+     */
+    public function testTransfering()
+    {
+        $connector = \Mockery::mock(new Curl());
+        $connector->shouldReceive('call')
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/wallets/1/transfer/2/', 'POST', array(
+                        'amount' => 123.45
+                    ))
+                    ->once()
+                    ->andReturn(array(
+                        'info' => array(
+                            'http_code' => 200,
+                            'Content-Type' => 'application/json'
+                        ),
+                        'response' => json_encode(array(
+                            'source_wallet' => array(
+                                'id' => 1,
+                                'name' => 'wallet-1',
+                                'balance' => 273.45
+                            ),
+                            'target_wallet' => array(
+                                'id' => 2,
+                                'name' => 'wallet-2',
+                                'balance' => 125
+                            ),
+                            'amount' => 123.45
+                        ))
+                    ));
+        
+        $client = new Client('abc123', $connector);
+        $wallet = $client->wallet->transfer(1, 2, 123.45);
+        
+        $this->assertInternalType('array', $wallet);
+        $this->assertEquals(1, $wallet['source_wallet']['id']);
+        $this->assertEquals('wallet-1', $wallet['source_wallet']['name']);
+        $this->assertEquals(273.45, $wallet['source_wallet']['balance']);
+        $this->assertEquals(2, $wallet['target_wallet']['id']);
+        $this->assertEquals('wallet-2', $wallet['target_wallet']['name']);
+        $this->assertEquals(125, $wallet['target_wallet']['balance']);
+        $this->assertEquals(123.45, $wallet['amount']);
+    }
+    
 }
