@@ -133,7 +133,7 @@ class ContactTest extends PHPUnit_Framework_TestCase
                     ->once()
                     ->andReturn(array(
                         'info' => array(
-                            'http_code' => 200,
+                            'http_code' => 204,
                             'Content-Type' => 'application/json'
                         ),
                         'response' => json_encode(array())
@@ -270,6 +270,38 @@ class ContactTest extends PHPUnit_Framework_TestCase
         $this->assertInternalType('array', $contact);
         $this->assertEquals(2, $contact['id']);
         $this->assertEquals('Important people', $contact['name']);
+        $this->assertEquals(0, $contact['contacts_count']);
+    }
+    
+    /**
+     * Test updating existing groups
+     */
+    public function testUpdatingGroup()
+    {
+        $connector = \Mockery::mock(new Curl());
+        $connector->shouldReceive('call')
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/contacts/groups/2', 'PUT', array(
+                        'name' => 'Still very important people'
+                    ))
+                    ->once()
+                    ->andReturn(array(
+                        'info' => array(
+                            'http_code' => 200,
+                            'Content-Type' => 'application/json'
+                        ),
+                        'response' => json_encode(array(
+                            'id' => 2,
+                            'name' => 'Still very important people',
+                            'contacts_count' => 0
+                        ))
+                    ));
+        
+        $client = new Client('abc123', $connector);
+        $contact = $client->contact->updateGroup(2, 'Still very important people');
+        
+        $this->assertInternalType('array', $contact);
+        $this->assertEquals(2, $contact['id']);
+        $this->assertEquals('Still very important people', $contact['name']);
         $this->assertEquals(0, $contact['contacts_count']);
     }
 }
