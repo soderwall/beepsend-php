@@ -89,4 +89,36 @@ class ContactTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('Example contact', $contact['firstname']);
     }
     
+    /**
+     * Test updating existing contacts
+     */
+    public function testUpdate()
+    {
+        $connector = \Mockery::mock(new Curl());
+        $connector->shouldReceive('call')
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/contacts/22594443', 'PUT', array(
+                        'msisdn' => 3456789,
+                        'firstname' => 'Still an example'
+                    ))
+                    ->once()
+                    ->andReturn(array(
+                        'info' => array(
+                            'http_code' => 200,
+                            'Content-Type' => 'application/json'
+                        ),
+                        'response' => json_encode(array(
+                            'id' => 22594443,
+                            'msisdn' => 3456789,
+                            'firstname' => 'Still an example'
+                        ))
+                    ));
+        
+        $client = new Client('abc123', $connector);
+        $contact = $client->contact->update(22594443, array('msisdn' => 3456789, 'firstname' => 'Still an example'));
+        
+        $this->assertInternalType('array', $contact);
+        $this->assertEquals(22594443, $contact['id']);
+        $this->assertEquals(3456789, $contact['msisdn']);
+        $this->assertEquals('Still an example', $contact['firstname']);
+    }
 }
