@@ -178,4 +178,32 @@ class WalletTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(123.45, $wallet['amount']);
     }
     
+    /**
+     * Test wallet topup
+     */
+    public function testTopup()
+    {
+        $connector = \Mockery::mock(new Curl());
+        $connector->shouldReceive('call')
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/wallets/1/topup/paypal/', 'POST', array(
+                        'amount' => 10
+                    ))
+                    ->once()
+                    ->andReturn(array(
+                        'info' => array(
+                            'http_code' => 200,
+                            'Content-Type' => 'application/json'
+                        ),
+                        'response' => json_encode(array(
+                            'url' => 'https:\/\/www.sandbox.paypal.com\/cgi-bin\/webscr?cmd=_ap-payment&paykey=foo'
+                        ))
+                    ));
+        
+        $client = new Client('abc123', $connector);
+        $wallet = $client->wallet->topup(1, 10);
+        
+        $this->assertInternalType('array', $wallet);
+        $this->assertEquals('https:\/\/www.sandbox.paypal.com\/cgi-bin\/webscr?cmd=_ap-payment&paykey=foo', $wallet['url']);
+    }
+    
 }
