@@ -7,6 +7,12 @@ class ContactTest extends PHPUnit_Framework_TestCase
 {
     
     /**
+     * Example of contacts csv file for uploading to Beepsend
+     * @var string
+     */
+    private $contactsFile = '/../data/contacts.csv';
+    
+    /**
      * Test getting all contacts
      */
     public function testGettingAll()
@@ -326,5 +332,40 @@ class ContactTest extends PHPUnit_Framework_TestCase
         $contact = $client->contact->deleteGroup(2);
         
         $this->assertInternalType('array', $contact);
+    }
+    
+    /**
+     * Test uploading contacts to some group via csv file
+     */
+    public function testUploadingContacts()
+    {
+        $fileData = file_get_contents(__DIR__ . $this->contactsFile);
+        
+        $connector = \Mockery::mock(new Curl());
+        $connector->shouldReceive('upload')
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/contacts/groups/2/upload/', $fileData, '')
+                    ->once()
+                    ->andReturn(array(
+                        'info' => array(
+                            'http_code' => 204,
+                            'Content-Type' => 'application/json'
+                        ),
+                        'response' => json_encode(array())
+                    ));
+        
+        $client = new Client('abc123', $connector);
+        $contact = $client->contact->upload(__DIR__ . $this->contactsFile, 2);
+        
+        $this->assertInternalType('array', $contact);
+    }
+    
+    /**
+     * If csv file with contacts is not found we need to throw file not found exception
+     * @expectedException Beepsend\Exception\FileNotFound
+     */
+    public function testUploadingException()
+    {
+        $client = new Client('abc123');
+        $client->contact->upload('fileThatDoesntExists', 2);
     }
 }
