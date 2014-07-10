@@ -343,4 +343,48 @@ class MessageTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(null, $message['error']);
     }
     
+    /**
+     * Test getting batches
+     */
+    public function testBatches()
+    {
+        $connector = \Mockery::mock(new Curl());
+        $connector->shouldReceive('call')
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/batches/', 'GET', array())
+                    ->once()
+                    ->andReturn(array(
+                        'info' => array(
+                            'http_code' => 200,
+                            'Content-Type' => 'application/json'
+                        ),
+                        'response' => json_encode(array(
+                            array(
+                                'id' => 3,
+                                'label' => 'My custom name for my batch',
+                                'date_created' => 1386777418,
+                                'last_used' => 1387442294
+                            ),
+                            array(
+                                'id' => 4,
+                                'label' => 'batch testing',
+                                'date_created' => 1387457467,
+                                'last_used' => 1387457467
+                            )
+                        ))
+                    ));
+        
+        $client = new Client('abc123', $connector);
+        $message = $client->message->batches();
+        
+        $this->assertInternalType('array', $message);
+        $this->assertEquals(3, $message[0]['id']);
+        $this->assertEquals('My custom name for my batch', $message[0]['label']);
+        $this->assertEquals(1386777418, $message[0]['date_created']);
+        $this->assertEquals(1387442294, $message[0]['last_used']);
+        $this->assertEquals(4, $message[1]['id']);
+        $this->assertEquals('batch testing', $message[1]['label']);
+        $this->assertEquals(1387457467, $message[1]['date_created']);
+        $this->assertEquals(1387457467, $message[1]['last_used']);
+    }
+    
 }
