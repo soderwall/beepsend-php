@@ -121,4 +121,27 @@ class ContactTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(3456789, $contact['msisdn']);
         $this->assertEquals('Still an example', $contact['firstname']);
     }
+    
+    /**
+     * Test deleting contacts
+     */
+    public function testDelete()
+    {
+        $connector = \Mockery::mock(new Curl());
+        $connector->shouldReceive('call')
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/contacts/22594443', 'DELETE', array())
+                    ->once()
+                    ->andReturn(array(
+                        'info' => array(
+                            'http_code' => 200,
+                            'Content-Type' => 'application/json'
+                        ),
+                        'response' => json_encode(array())
+                    ));
+        
+        $client = new Client('abc123', $connector);
+        $contact = $client->contact->delete(22594443);
+        
+        $this->assertInternalType('array', $contact);
+    }
 }
