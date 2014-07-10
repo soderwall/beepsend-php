@@ -68,4 +68,36 @@ class WalletTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('Beepsend wallet', $wallet['name']);
     }
     
+    /**
+     * Test updating wallet info
+     */
+    public function testUpdating()
+    {
+        $connector = \Mockery::mock(new Curl());
+        $connector->shouldReceive('call')
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/wallets/1', 'PUT', array(
+                        'name' => 'Beepsend new wallet'
+                    ))
+                    ->once()
+                    ->andReturn(array(
+                        'info' => array(
+                            'http_code' => 200,
+                            'Content-Type' => 'application/json'
+                        ),
+                        'response' => json_encode(array(
+                            'id' => 1,
+                            'balance' => 47.60858,
+                            'name' => 'Beepsend new wallet'
+                        ))
+                    ));
+        
+        $client = new Client('abc123', $connector);
+        $wallet = $client->wallet->update(1, 'Beepsend new wallet');
+        
+        $this->assertInternalType('array', $wallet);
+        $this->assertEquals(1, $wallet['id']);
+        $this->assertEquals(47.60858, $wallet['balance']);
+        $this->assertEquals('Beepsend new wallet', $wallet['name']);
+    }
+    
 }
