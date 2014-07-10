@@ -206,4 +206,40 @@ class WalletTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('https:\/\/www.sandbox.paypal.com\/cgi-bin\/webscr?cmd=_ap-payment&paykey=foo', $wallet['url']);
     }
     
+    /**
+     * Test getting wallet notifications
+     */
+    public function testNotifications()
+    {
+        $connector = \Mockery::mock(new Curl());
+        $connector->shouldReceive('call')
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/wallets/1/emails/', 'GET', array())
+                    ->once()
+                    ->andReturn(array(
+                        'info' => array(
+                            'http_code' => 200,
+                            'Content-Type' => 'application/json'
+                        ),
+                        'response' => json_encode(array(
+                            array(
+                                'id' => 1,
+                                'email' => 'support@beepsend.com'
+                            ),
+                            array(
+                                'id' => 2,
+                                'email' => 'example@beepsend.com'
+                            )
+                        ))
+                    ));
+        
+        $client = new Client('abc123', $connector);
+        $wallet = $client->wallet->notifications(1);
+        
+        $this->assertInternalType('array', $wallet);
+        $this->assertEquals(1, $wallet[0]['id']);
+        $this->assertEquals('support@beepsend.com', $wallet[0]['email']);
+        $this->assertEquals(2, $wallet[1]['id']);
+        $this->assertEquals('example@beepsend.com', $wallet[1]['email']);
+    }
+    
 }
