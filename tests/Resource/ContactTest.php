@@ -240,4 +240,36 @@ class ContactTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(1, $contact[1]['group_id']);
         $this->assertEquals('Customers', $contact[1]['group_name']);
     }
+    
+    /**
+     * Test adding new group
+     */
+    public function testAddingGroup()
+    {
+        $connector = \Mockery::mock(new Curl());
+        $connector->shouldReceive('call')
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/contacts/groups/', 'POST', array(
+                        'name' => 'Important people'
+                    ))
+                    ->once()
+                    ->andReturn(array(
+                        'info' => array(
+                            'http_code' => 200,
+                            'Content-Type' => 'application/json'
+                        ),
+                        'response' => json_encode(array(
+                            'id' => 2,
+                            'name' => 'Important people',
+                            'contacts_count' => 0
+                        ))
+                    ));
+        
+        $client = new Client('abc123', $connector);
+        $contact = $client->contact->addGroup('Important people');
+        
+        $this->assertInternalType('array', $contact);
+        $this->assertEquals(2, $contact['id']);
+        $this->assertEquals('Important people', $contact['name']);
+        $this->assertEquals(0, $contact['contacts_count']);
+    }
 }
