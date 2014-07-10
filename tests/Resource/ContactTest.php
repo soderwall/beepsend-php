@@ -190,4 +190,54 @@ class ContactTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(2, $contact[1]['contacts_count']);
         $this->assertEquals(0, $contact[1]['processing']);
     }
+    
+    /**
+     * Test getting contacts from some group
+     */
+    public function testGroup()
+    {
+        $connector = \Mockery::mock(new Curl());
+        $connector->shouldReceive('call')
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/contacts/groups/1', 'GET', array())
+                    ->once()
+                    ->andReturn(array(
+                        'info' => array(
+                            'http_code' => 200,
+                            'Content-Type' => 'application/json'
+                        ),
+                        'response' => json_encode(array(
+                            array(
+                                'id' => 22594444,
+                                'msisdn' => 12345,
+                                'name' => 'Multi-example',
+                                'group_id' => 1,
+                                'group_name' => 'Customers'
+                            ),
+                            array(
+                                'id' => 22594443,
+                                'msisdn' => 3456789,
+                                'name' => 'Still an example',
+                                'group_id' => 1,
+                                'group_name' => 'Customers'
+                            )
+                        ))
+                    ));
+        
+        $client = new Client('abc123', $connector);
+        $contact = $client->contact->group(1);
+        
+        $this->assertInternalType('array', $contact);
+        $this->assertInternalType('array', $contact[0]);
+        $this->assertInternalType('array', $contact[1]);
+        $this->assertEquals(22594444, $contact[0]['id']);
+        $this->assertEquals(12345, $contact[0]['msisdn']);
+        $this->assertEquals('Multi-example', $contact[0]['name']);
+        $this->assertEquals(1, $contact[0]['group_id']);
+        $this->assertEquals('Customers', $contact[0]['group_name']);
+        $this->assertEquals(22594443, $contact[1]['id']);
+        $this->assertEquals(3456789, $contact[1]['msisdn']);
+        $this->assertEquals('Still an example', $contact[1]['name']);
+        $this->assertEquals(1, $contact[1]['group_id']);
+        $this->assertEquals('Customers', $contact[1]['group_name']);
+    }
 }
