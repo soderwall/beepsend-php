@@ -242,4 +242,57 @@ class WalletTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('example@beepsend.com', $wallet[1]['email']);
     }
     
+    /**
+     * Test adding notification email
+     */
+    public function testAddingNotificationEmail()
+    {
+        $connector = \Mockery::mock(new Curl());
+        $connector->shouldReceive('call')
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/wallets/1/emails/', 'POST', array(
+                        'email' => 'mailman@beepsend.com'
+                    ))
+                    ->once()
+                    ->andReturn(array(
+                        'info' => array(
+                            'http_code' => 200,
+                            'Content-Type' => 'application/json'
+                        ),
+                        'response' => json_encode(array(
+                            'id' => 3,
+                            'email' => 'mailman@beepsend.com'
+                        ))
+                    ));
+        
+        $client = new Client('abc123', $connector);
+        $wallet = $client->wallet->addNotificationEmail(1, 'mailman@beepsend.com');
+        
+        $this->assertInternalType('array', $wallet);
+        $this->assertEquals(3, $wallet['id']);
+        $this->assertEquals('mailman@beepsend.com', $wallet['email']);
+    }
+    
+    /**
+     * Test deleting notification email
+     */
+    public function testDeletingNotificationEmail()
+    {
+        $connector = \Mockery::mock(new Curl());
+        $connector->shouldReceive('call')
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/wallets/1/emails/3', 'DELETE', array())
+                    ->once()
+                    ->andReturn(array(
+                        'info' => array(
+                            'http_code' => 204,
+                            'Content-Type' => 'application/json'
+                        ),
+                        'response' => json_encode(array())
+                    ));
+        
+        $client = new Client('abc123', $connector);
+        $wallet = $client->wallet->deleteNotificationEmail(1, 3);
+        
+        $this->assertInternalType('array', $wallet);
+    }
+    
 }
