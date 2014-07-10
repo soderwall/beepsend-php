@@ -56,4 +56,37 @@ class ContactTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('Beepnumbers', $contact[1]['group_name']);
     }
     
+    /**
+     * Test adding new contact
+     */
+    public function testAdd()
+    {
+        $connector = \Mockery::mock(new Curl());
+        $connector->shouldReceive('call')
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/contacts/', 'POST', array(
+                        'msisdn' => 1234567,
+                        'firstname' => 'Example contact'
+                    ))
+                    ->once()
+                    ->andReturn(array(
+                        'info' => array(
+                            'http_code' => 200,
+                            'Content-Type' => 'application/json'
+                        ),
+                        'response' => json_encode(array(
+                            'id' => 22594443,
+                            'msisdn' => 1234567,
+                            'firstname' => 'Example contact'
+                        ))
+                    ));
+        
+        $client = new Client('abc123', $connector);
+        $contact = $client->contact->add(1234567, 'Example contact');
+        
+        $this->assertInternalType('array', $contact);
+        $this->assertEquals(22594443, $contact['id']);
+        $this->assertEquals(1234567, $contact['msisdn']);
+        $this->assertEquals('Example contact', $contact['firstname']);
+    }
+    
 }
