@@ -419,4 +419,40 @@ class MessageTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(46736007518, $message['to'][0]);
     }
     
+    /**
+     * Test call for group estimation
+     */
+    public function testGroupEstimationCost()
+    {
+        $connector = \Mockery::mock(new Curl());
+        $connector->shouldReceive('call')
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/sms/costestimate/', 'POST', array(
+                        'groups' => array(11, 34),
+                        'message' => 'Hello World! 你好世界!',
+                        'encoding' => 'UTF-8'
+                    ))
+                    ->once()
+                    ->andReturn(array(
+                        'info' => array(
+                            'http_code' => 200,
+                            'Content-Type' => 'application/json'
+                        ),
+                        'response' => json_encode(array(
+                            'total_cost' => 358.57,
+                            'groups' => array(
+                                11 => 13.45,
+                                34 => 345.12
+                            )
+                        ))
+                    ));
+        
+        $client = new Client('abc123', $connector);
+        $message = $client->message->estimateCostGroup(array(11, 34), 'Hello World! 你好世界!');
+        
+        $this->assertInternalType('array', $message);
+        $this->assertEquals(358.57, $message['total_cost']);
+        $this->assertEquals(13.45, $message['groups'][11]);
+        $this->assertEquals(345.12, $message['groups'][34]);
+    }
+    
 }
