@@ -304,4 +304,27 @@ class ContactTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('Still very important people', $contact['name']);
         $this->assertEquals(0, $contact['contacts_count']);
     }
+    
+    /**
+     * Test deleting contact groups
+     */
+    public function testDeletingGroup()
+    {
+        $connector = \Mockery::mock(new Curl());
+        $connector->shouldReceive('call')
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/contacts/groups/2', 'DELETE', array())
+                    ->once()
+                    ->andReturn(array(
+                        'info' => array(
+                            'http_code' => 204,
+                            'Content-Type' => 'application/json'
+                        ),
+                        'response' => json_encode(array())
+                    ));
+        
+        $client = new Client('abc123', $connector);
+        $contact = $client->contact->deleteGroup(2);
+        
+        $this->assertInternalType('array', $contact);
+    }
 }
