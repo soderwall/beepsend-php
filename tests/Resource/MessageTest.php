@@ -387,4 +387,36 @@ class MessageTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(1387457467, $message[1]['last_used']);
     }
     
+    /**
+     * Test call for estimation
+     */
+    public function testEstimationCost()
+    {
+        $connector = \Mockery::mock(new Curl());
+        $connector->shouldReceive('call')
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/sms/costestimate/', 'POST', array(
+                        'to' => 46736007518,
+                        'message' => 'Hello World! 你好世界!',
+                        'encoding' => 'UTF-8'
+                    ))
+                    ->once()
+                    ->andReturn(array(
+                        'info' => array(
+                            'http_code' => 200,
+                            'Content-Type' => 'application/json'
+                        ),
+                        'response' => json_encode(array(
+                            'total_cost' => 0.013,
+                            'to' => array(46736007518)
+                        ))
+                    ));
+        
+        $client = new Client('abc123', $connector);
+        $message = $client->message->estimateCost(46736007518, 'Hello World! 你好世界!');
+        
+        $this->assertInternalType('array', $message);
+        $this->assertEquals(0.013, $message['total_cost']);
+        $this->assertEquals(46736007518, $message['to'][0]);
+    }
+    
 }
