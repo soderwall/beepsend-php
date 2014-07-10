@@ -80,4 +80,99 @@ class MessageTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(null, $message['error']);
     }
     
+    /**
+     * Test sending messages in batches
+     */
+    public function testBatch()
+    {
+        $connector = \Mockery::mock(new Curl());
+        $connector->shouldReceive('call')
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/sms/', 'POST', array(
+                        array(
+                            'batch_label' => 'Lottery winner',
+                            'from' => 'Beepsend',
+                            'to' => 12345,
+                            'message' => 'You won!',
+                            'encoding' => 'UTF-8',
+                            'message_type' => 'flash'
+                        ),
+                        array(
+                            'batch_label' => 'Lottery contestants',
+                            'from' => 'Beepboop',
+                            'to' => array(123456, 1234567),
+                            'message' => 'You won!',
+                            'encoding' => 'UTF-8'
+                        )
+                    ))
+                    ->once()
+                    ->andReturn(array(
+                        'info' => array(
+                            'http_code' => 201,
+                            'Content-Type' => 'application/json'
+                        ),
+                        'response' => json_encode(array(
+                            array(
+                                'id' => 03003620013893441731559112345,
+                                'batch' => array(
+                                    'id' => 10,
+                                    'name' => 'Lottery winner'
+                                ),
+                                'to' => 12345,
+                                'from' => 'Beepsend',
+                                'errors' => null
+                            ),
+                            array(
+                                'id' => 030889300138934417315591123456,
+                                'batch' => array(
+                                    'id' => 11,
+                                    'name' => 'Lottery contestants'
+                                ),
+                                'to' => 123456,
+                                'from' => 'Beepboop',
+                                'errors' => null
+                            ),
+                            array(
+                                'id' => 0310373001389344173155911234567,
+                                'batch' => array(
+                                    'id' => 11,
+                                    'name' => 'Lottery contestants'
+                                ),
+                                'to' => 1234567,
+                                'from' => 'Beepboop',
+                                'errors' => null
+                            )
+                        ))
+                    ));
+        
+        $client = new Client('abc123', $connector);
+        $message = $client->message->batch(array(
+                        array(
+                            'batch_label' => 'Lottery winner',
+                            'from' => 'Beepsend',
+                            'to' => 12345,
+                            'message' => 'You won!',
+                            'encoding' => 'UTF-8',
+                            'message_type' => 'flash'
+                        ),
+                        array(
+                            'batch_label' => 'Lottery contestants',
+                            'from' => 'Beepboop',
+                            'to' => array(123456, 1234567),
+                            'message' => 'You won!',
+                            'encoding' => 'UTF-8'
+                        )
+                    ));
+        
+        $this->assertInternalType('array', $message);
+        $this->assertInternalType('array', $message[0]);
+        $this->assertInternalType('array', $message[1]);
+        $this->assertInternalType('array', $message[2]);
+        $this->assertEquals(03003620013893441731559112345, $message[0]['id']);
+        $this->assertEquals(10, $message[0]['batch']['id']);
+        $this->assertEquals('Lottery winner', $message[0]['batch']['name']);
+        $this->assertEquals(12345, $message[0]['to']);
+        $this->assertEquals('Beepsend', $message[0]['from']);
+        $this->assertEquals(null, $message[0]['errors']);
+    }
+    
 }
