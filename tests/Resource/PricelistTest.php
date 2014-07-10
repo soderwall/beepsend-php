@@ -52,4 +52,29 @@ class PricelistTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(true, $pricelist['active']);
     }
     
+    /**
+     * Test downloading pricelists
+     */
+    public function testDownload()
+    {
+        $connector = \Mockery::mock(new Curl());
+        $connector->shouldReceive('call')
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/pricelists/me.csv', 'GET', array())
+                    ->once()
+                    ->andReturn(array(
+                        'info' => array(
+                            'http_code' => 200,
+                            'Content-Type' => 'application/json'
+                        ),
+                        'response' => 'mcc;mnc;operator;price'
+                                    . '240;;Default;0.08'
+                                    . '240;01;"TeliaSonera Mobile Networks AB Sweden (TeliaSonera Mobile Networks)";0.068'
+                    ));
+        
+        $client = new Client('abc123', $connector);
+        $pricelist = $client->pricelist->download('me', 'me');
+        
+        $this->assertEquals(null, $pricelist);
+    }
+    
 }
