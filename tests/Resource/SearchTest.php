@@ -52,4 +52,50 @@ class SearchTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('Phone', $results[1]['name']);
     }
     
+    /**
+     * Test searching contacts groups
+     */
+    public function testSearchingGroups()
+    {
+        $connector = \Mockery::mock(new Curl());
+        $connector->shouldReceive('call')
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/search/contact_groups/', 'GET', array(
+                        'query' => 'Something'
+                    ))
+                    ->once()
+                    ->andReturn(array(
+                        'info' => array(
+                            'http_code' => 200,
+                            'Content-Type' => 'application/json'
+                        ),
+                        'response' => json_encode(array(
+                            array(
+                                'id' => 1,
+                                'name' => 'Customers',
+                                'contacts_count' => 27,
+                                'processing' => 1
+                            ),
+                            array(
+                                'id' => 2,
+                                'name' => 'Others',
+                                'contacts_count' => 2,
+                                'processing' => 0
+                            )
+                        ))
+                    ));
+        
+        $client = new Client('abc123', $connector);
+        $results = $client->search->groups('Something');
+        
+        $this->assertInternalType('array', $results);
+        $this->assertEquals(1, $results[0]['id']);
+        $this->assertEquals('Customers', $results[0]['name']);
+        $this->assertEquals(27, $results[0]['contacts_count']);
+        $this->assertEquals(1, $results[0]['processing']);
+        $this->assertEquals(2, $results[1]['id']);
+        $this->assertEquals('Others', $results[1]['name']);
+        $this->assertEquals(2, $results[1]['contacts_count']);
+        $this->assertEquals(0, $results[1]['processing']);
+    }
+    
 }
