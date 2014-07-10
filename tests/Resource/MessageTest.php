@@ -213,4 +213,49 @@ class MessageTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(null, $message['error']);
     }
     
+    /**
+     * Test getting details of sent messages
+     */
+    public function testLookup()
+    {
+        $connector = \Mockery::mock(new Curl());
+        $connector->shouldReceive('call')
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/sms/12345', 'GET', array())
+                    ->once()
+                    ->andReturn(array(
+                        'info' => array(
+                            'http_code' => 200,
+                            'Content-Type' => 'application/json'
+                        ),
+                        'response' => json_encode(array(
+                            'id' => 12345,
+                            'to' => array(
+                                'address' => 46736007518,
+                                'ton' => 1,
+                                'npi' => 1
+                            ),
+                            'from' => array(
+                                'address' => 'Beepsend',
+                                'ton' => 1,
+                                'npi' => 1
+                            ),
+                            'dlr' => array(
+                                'status' => 'DELIVRD',
+                                'error' => 0
+                            ),
+                            'price' => 0.068
+                        ))
+                    ));
+        
+        $client = new Client('abc123', $connector);
+        $message = $client->message->lookup(12345);
+        
+        $this->assertInternalType('array', $message);
+        $this->assertEquals(12345, $message['id']);
+        $this->assertEquals(46736007518, $message['to']['address']);
+        $this->assertEquals('Beepsend', $message['from']['address']);
+        $this->assertEquals('DELIVRD', $message['dlr']['status']);
+        $this->assertEquals(0.068, $message['price']);
+    }
+    
 }
