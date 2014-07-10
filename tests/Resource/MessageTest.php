@@ -44,4 +44,40 @@ class MessageTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(null, $message['error']);
     }
     
+    /**
+     * Test sending messages to groups
+     */
+    public function testGroup()
+    {
+        $connector = \Mockery::mock(new Curl());
+        $connector->shouldReceive('call')
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/batches/', 'POST', array(
+                        'from' => 'Beepsend',
+                        'groups' => array(1,2),
+                        'message' => 'You rock!',
+                        'encoding' => 'UTF-8',
+                        'receive_dlr' => 0
+                    ))
+                    ->once()
+                    ->andReturn(array(
+                        'info' => array(
+                            'http_code' => 201,
+                            'Content-Type' => 'application/json'
+                        ),
+                        'response' => json_encode(array(
+                            'groups' => array(1,2),
+                            'from' => 'Beepsend',
+                            'error' => null
+                        ))
+                    ));
+        
+        $client = new Client('abc123', $connector);
+        $message = $client->message->group(array(1,2), 'Beepsend', 'You rock!');
+        
+        $this->assertInternalType('array', $message);
+        $this->assertInternalType('array', $message['groups']);
+        $this->assertEquals('Beepsend', $message['from']);
+        $this->assertEquals(null, $message['error']);
+    }
+    
 }
