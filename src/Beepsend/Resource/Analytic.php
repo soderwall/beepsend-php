@@ -8,7 +8,8 @@ use Beepsend\Request;
  * Beepsend analytics resource
  * @package Beepsend
  */
-class Analytic {
+class Analytic 
+{
     
     /**
      * Beepsend request handler

@@ -3,7 +3,7 @@
 namespace Beepsend\Exception;
 
 /**
- * Throw when we can't find resource to load
+ * Throw when we send invalid request
  * @package Beepsend
  */
 final class InvalidRequest extends \Exception

@@ -8,7 +8,8 @@ use Beepsend\Request;
  * Beepsend search resource
  * @package Beepsend
  */
-class Search {
+class Search 
+{
     
     /**
      * Beepsend request handler

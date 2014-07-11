@@ -8,7 +8,8 @@ use Beepsend\Request;
  * Beepsend HLR resource
  * @package Beepsend
  */
-class Hlr {
+class Hlr 
+{
     
     /**
      * Beepsend request handler

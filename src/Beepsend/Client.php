@@ -9,7 +9,8 @@ use Beepsend\Exception\NotFoundResource;
  * Beepsend client
  * @package Beepsend
  */
-class Client {
+class Client 
+{
     
     /**
      * Version of Beepsend PHP helper

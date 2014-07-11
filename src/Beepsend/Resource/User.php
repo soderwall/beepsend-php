@@ -8,7 +8,8 @@ use Beepsend\Request;
  * Beepsend user resource
  * @package Beepsend
  */
-class User {
+class User 
+{
     
     /**
      * Beepsend request handler

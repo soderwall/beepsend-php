@@ -3,7 +3,7 @@
 namespace Beepsend\Exception;
 
 /**
- * Throw when we can't find resource to load
+ * Throw when user send invalid token
  * @package Beepsend
  */
 final class InvalidToken extends \Exception

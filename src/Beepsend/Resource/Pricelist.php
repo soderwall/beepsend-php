@@ -8,7 +8,8 @@ use Beepsend\Request;
  * Beepsend pricelist resource
  * @package Beepsend
  */
-class Pricelist {
+class Pricelist 
+{
     
     /**
      * Beepsend request handler

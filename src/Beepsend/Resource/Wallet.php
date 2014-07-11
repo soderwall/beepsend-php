@@ -8,7 +8,8 @@ use Beepsend\Request;
  * Beepsend wallet resource
  * @package Beepsend
  */
-class Wallet {
+class Wallet 
+{
     
     /**
      * Beepsend request handler

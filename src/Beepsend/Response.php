@@ -6,7 +6,8 @@ namespace Beepsend;
  * Beepsend response
  * @package Beepsend
  */
-class Response {
+class Response 
+{
     
     /**
      * Response content type

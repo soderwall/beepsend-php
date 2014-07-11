@@ -9,7 +9,8 @@ use Beepsend\Exception\FileNotFound;
  * Beepsend contact resource
  * @package Beepsend
  */
-class Contact {
+class Contact 
+{
     
     /**
      * Beepsend request handler

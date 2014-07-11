@@ -13,7 +13,8 @@ use Beepsend\Exception\RateLimit;
  * Beepsend request
  * @package Beepsend
  */
-class Request {
+class Request 
+{
     
     /**
      * Beepsend user or connection token that we are using to authorize on Beepsend API
