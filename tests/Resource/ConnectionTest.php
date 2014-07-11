@@ -188,4 +188,9 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
         $this->assertInternalType('array', $connection);
         $this->assertEquals('abc12345', $connection['password']);
     }
+    
+    public function tearDown()
+    {
+        \Mockery::close();
+    }
 }

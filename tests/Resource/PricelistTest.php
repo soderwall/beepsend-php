@@ -77,4 +77,9 @@ class PricelistTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(null, $pricelist);
     }
     
+    public function tearDown()
+    {
+        \Mockery::close();
+    }
+    
 }

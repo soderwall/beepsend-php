@@ -207,6 +207,9 @@ class UserTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('abc123', $user['api_token']);
     }
     
+    /**
+     * Test verifying email
+     */
     public function testVerifyingEmail()
     {
         $connector = \Mockery::mock(new Curl());
@@ -229,6 +232,9 @@ class UserTest extends PHPUnit_Framework_TestCase
         $this->assertInternalType('array', $user);
     }
     
+    /**
+     * Test verifying phone
+     */
     public function testVerifyingPhone()
     {
         $connector = \Mockery::mock(new Curl());
@@ -249,6 +255,11 @@ class UserTest extends PHPUnit_Framework_TestCase
         $user = $client->user->verifyPhone('abchash');
         
         $this->assertInternalType('array', $user);
+    }
+    
+    public function tearDown()
+    {
+        \Mockery::close();
     }
     
 }

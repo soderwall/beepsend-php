@@ -98,4 +98,8 @@ class SearchTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(0, $results[1]['processing']);
     }
     
+    public function tearDown()
+    {
+        \Mockery::close();
+    }
 }

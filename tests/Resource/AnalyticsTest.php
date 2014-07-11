@@ -111,4 +111,9 @@ class AnalyticsTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(100, $analytics['statistics']['delivered']);
         $this->assertEquals(12, $analytics['statistics']['expired']);
     }
+    
+    public function tearDown()
+    {
+        \Mockery::close();
+    }
 }

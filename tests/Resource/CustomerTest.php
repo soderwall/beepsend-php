@@ -34,4 +34,9 @@ class CustomerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('Beepsend AB', $customer['name']);
     }
     
+    public function tearDown()
+    {
+        \Mockery::close();
+    }
+    
 }

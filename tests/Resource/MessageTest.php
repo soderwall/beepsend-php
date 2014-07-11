@@ -455,4 +455,9 @@ class MessageTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(345.12, $message['groups'][34]);
     }
     
+    public function tearDown()
+    {
+        \Mockery::close();
+    }
+    
 }

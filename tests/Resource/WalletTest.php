@@ -295,4 +295,9 @@ class WalletTest extends PHPUnit_Framework_TestCase
         $this->assertInternalType('array', $wallet);
     }
     
+    public function tearDown()
+    {
+        \Mockery::close();
+    }
+    
 }

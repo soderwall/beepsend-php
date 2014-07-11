@@ -368,4 +368,9 @@ class ContactTest extends PHPUnit_Framework_TestCase
         $client = new Client('abc123');
         $client->contact->upload('fileThatDoesntExists', 2);
     }
+    
+    public function tearDown()
+    {
+        \Mockery::close();
+    }
 }
