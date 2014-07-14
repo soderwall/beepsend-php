@@ -3,10 +3,14 @@
 namespace Beepsend\Resource;
 
 use Beepsend\Request;
-use Beepsend\ResourceInterface;
 use Beepsend\Exception\FileNotFound;
 
-class Contact implements ResourceInterface {
+/**
+ * Beepsend contact resource
+ * @package Beepsend
+ */
+class Contact 
+{
     
     /**
      * Beepsend request handler
@@ -36,10 +40,10 @@ class Contact implements ResourceInterface {
     /**
      * Get all contacts belonging to your user.
      * @param string $group Group id or name
-     * @param string $sort Sorting of the dataset. Available keys: name, id. Can be prepended with + or - to change the sorting direction (+ ASC, - DESC).
+     * @param string $options Array of additional options. More info on: http://api.beepsend.com/docs.html#contacts
      * @return array
      */
-    public function all($group = null, $sort = null)
+    public function all($group = null, $options = array())
     {
         $data = array();
         
@@ -47,8 +51,9 @@ class Contact implements ResourceInterface {
             $data['group'] = $group;
         }
         
-        if (!is_null($sort)) {
-            $data['sort'] = $sort;
+        /* Merge additional options if we have */
+        if (!empty($options)) {
+            $data = array_merge($data, $options);
         }
         
         $response = $this->request->execute($this->actions['contacts'], 'GET', $data);
@@ -109,11 +114,28 @@ class Contact implements ResourceInterface {
     
     /**
      * Get all contact groups belonging to your user.
+     * @param string $sinceId Returns results more recent than the specified ID.
+     * @param string $maxId Returns results with an ID older than or equal to the specified ID.
+     * @param int $count How many objects to fetch. Maximum 200, default 200.
      * @return array
      */
-    public function groups()
+    public function groups($sinceId = null, $maxId = null, $count = null)
     {
-        $response = $this->request->execute($this->actions['groups'], 'GET');
+        $data = array();
+        
+        if (!is_null($sinceId)) {
+            $data['since_id'] = $sinceId;
+        }
+        
+        if (!is_null($maxId)) {
+            $data['max_id'] = $maxId;
+        }
+        
+        if (!is_null($count)) {
+            $data['count'] = $count;
+        }
+        
+        $response = $this->request->execute($this->actions['groups'], 'GET', $data);
         return $response;
     }
     

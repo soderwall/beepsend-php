@@ -3,9 +3,13 @@
 namespace Beepsend\Resource;
 
 use Beepsend\Request;
-use Beepsend\ResourceInterface;
 
-class Analytic implements ResourceInterface {
+/**
+ * Beepsend analytics resource
+ * @package Beepsend
+ */
+class Analytic 
+{
     
     /**
      * Beepsend request handler

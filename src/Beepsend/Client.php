@@ -3,10 +3,14 @@
 namespace Beepsend;
 
 use Beepsend\Request;
-
 use Beepsend\Exception\NotFoundResource;
 
-class Client {
+/**
+ * Beepsend client
+ * @package Beepsend
+ */
+class Client 
+{
     
     /**
      * Version of Beepsend PHP helper
@@ -22,10 +26,25 @@ class Client {
     /**
      * Init beepsend client
      * @param string $token User or Connection token to work with
+     * @param object $connector Specify manually connector that you want to use
      */
-    public function __construct($token)
+    public function __construct($token, $connector = null)
     {
-        $this->request = new Request($token);
+        if (empty($token)) {
+            /* User didn't set token */
+            throw new InvalidToken('Please set valid token!');
+        }
+        
+        if (!$connector) {
+            /* Detect connector that we will use */
+            if (extension_loaded('curl')) {
+                $connector = new Connector\Curl();
+            } else {
+                $connector = new Connector\Stream();
+            }
+        }
+        
+        $this->request = new Request($token, $connector);
     }
     
     /**

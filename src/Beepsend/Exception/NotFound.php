@@ -3,7 +3,8 @@
 namespace Beepsend\Exception;
 
 /**
- * Throw when we can't find resource to load
+ * Throw when we can't find API call we are looking for
+ * @package Beepsend
  */
 final class NotFound extends \Exception
 {

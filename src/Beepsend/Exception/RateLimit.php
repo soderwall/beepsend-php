@@ -3,10 +3,10 @@
 namespace Beepsend\Exception;
 
 /**
- * Throw when we can't find file to load
+ * Throw when we hit rate limit
  * @package Beepsend
  */
-final class FileNotFound extends \Exception
+final class RateLimit extends \Exception
 {
     /**
      * @internal

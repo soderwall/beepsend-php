@@ -4,6 +4,7 @@ namespace Beepsend\Exception;
 
 /**
  * Throw when we can't find resource to load
+ * @package Beepsend
  */
 final class NotFoundResource extends \Exception
 {

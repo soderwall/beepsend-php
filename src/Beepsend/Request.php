@@ -7,8 +7,20 @@ use Beepsend\Exception\InvalidToken;
 use Beepsend\Exception\InvalidRequest;
 use Beepsend\Exception\NotFound;
 use Beepsend\Exception\InternalError;
+use Beepsend\Exception\RateLimit;
 
-class Request {
+/**
+ * Beepsend request
+ * @package Beepsend
+ */
+class Request 
+{
+    
+    /**
+     * Beepsend user or connection token that we are using to authorize on Beepsend API
+     * @var string 
+     */
+    private $token;
     
     /**
      * Beepsend API version
@@ -37,30 +49,12 @@ class Request {
     /**
      * Set requred values for Beepsend request
      * @param string $token Token to work with
+     * @param object $connector Connector that we will use for 
      * @throws InvalidToken
      */
-    public function __construct($token)
+    public function __construct($token, $connector)
     {
-        if (empty($token)) {
-            /* User didn't set token */
-            throw new InvalidToken('Please set valid token!');
-        }
-        
-        /* Detect connector that we will use */
-        if (extension_loaded('curl')) {
-            $connector = new Connector\Curl(
-                    $this->version, 
-                    $this->userAgent, 
-                    $this->baseApiUrl, 
-                    $token);
-        } else {
-            $connector = new Connector\Stream(
-                    $this->version, 
-                    $this->userAgent, 
-                    $this->baseApiUrl, 
-                    $token);
-        }
-        
+        $this->token = $token;
         $this->connector = $connector;
     }
     
@@ -73,8 +67,30 @@ class Request {
      */
     public function execute($action, $method = 'GET', $params = array())
     {
-        $rawResponse = $this->connector->execute($action, $method, $params);
-        return $this->response($rawResponse['info'], $rawResponse['response']);
+        $this->connector->addHeader('User-Agent', $this->userAgent);
+        $this->connector->addHeader('Authorization', 'Token ' . $this->token);
+        
+        $rawResponse = $this->connector->call($this->baseApiUrl . '/' . $this->version . $action, $method, $params);
+        return $this->response($rawResponse['info'], $rawResponse['response'])->get();
+    }
+    
+    /**
+     * Make request over Beepsend API to download some file
+     * @param string $fileName Name of file
+     * @param string $action Action that we are calling
+     * @param string $method Request method
+     * @param array $params Array of additional parameters
+     * @return Beepsend\Response
+     */
+    public function download($fileName, $action, $method = 'GET', $params = array())
+    {
+        $this->connector->addHeader('User-Agent', $this->userAgent);
+        $this->connector->addHeader('Authorization', 'Token ' . $this->token);
+        
+        $rawResponse = $this->connector->call($this->baseApiUrl . '/' . $this->version . $action, $method, $params);
+        return $this->response($rawResponse['info'], $rawResponse['response'])
+                ->setFileName($fileName)
+                ->get();
     }
     
     /**
@@ -86,8 +102,38 @@ class Request {
      */
     public function upload($action, $params = array(), $rawData = '')
     {
-        $rawResponse = $this->connector->upload($action, $params, $rawData);
-        return $this->response($rawResponse['info'], $rawResponse['response']);
+        $this->connector->addHeader('User-Agent', $this->userAgent);
+        $this->connector->addHeader('Authorization', 'Token ' . $this->token);
+        
+        $rawResponse = $this->connector->upload($this->baseApiUrl . '/' . $this->version . $action, $params, $rawData);
+        return $this->response($rawResponse['info'], $rawResponse['response'])->get();
+    }
+    
+    /**
+     * Return Beepsend API version
+     * @return int
+     */
+    public function getVersion()
+    {
+        return $this->version;
+    }
+    
+    /**
+     * Return library user agent
+     * @return string
+     */
+    public function getUserAgent()
+    {
+        return $this->userAgent;
+    }
+    
+    /**
+     * Return Beepsend base API url
+     * @return string
+     */
+    public function getBaseApiUrl()
+    {
+        return $this->baseApiUrl;
     }
     
     /**
@@ -115,6 +161,8 @@ class Request {
                 throw new NotFound('Call you are looking for not existing, this means that something is wrong with API or this SDK.');
             case 500:
                 throw new InternalError('Something is wrong with API, please try again later.');
+            case 503:
+                throw new RateLimit('Too many requests. Please try again later.');
         }
     }
     

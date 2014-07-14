@@ -2,130 +2,162 @@
 
 namespace Beepsend\Connector;
 
-use Beepsend\ConnectorInterface;
+use Beepsend\Connector\ConnectorInterface;
 
+/**
+ * Beepsend curl connector
+ * @package Beepsend
+ */
 class Curl implements ConnectorInterface 
 {
+    /**
+     * Array of request headers
+     * @var array
+     */
+    private $headers;
     
     /**
-     * Beepsend API version
-     * @var int
+     * Curl holder
+     * @var Object 
      */
-    private $version;
+    private $curl;
     
-    /**
-     * Beepsend PHP library user agent
-     * @var string
-     */
-    private $userAgent;
-    
-    /**
-     * Beepsend API url
-     * @var string
-     */
-    private $baseApiUrl;
-    
-    /**
-     * User or Connection token to authorize on Beepsend API
-     * @var string
-     */
-    private $token;
-    
-    /**
-     * {@inheritdoc}
-     */
-    public function __construct($version, $userAgent, $baseApiUrl, $token)
-    {
-        $this->version = $version;
-        $this->userAgent = $userAgent;
-        $this->baseApiUrl = $baseApiUrl;
-        $this->token = $token;
-    }
-
     /**
      * Make some request over Beepsend API, supporting GET, POST, PUT and DELETE methods
-     * @param string $action Action that we are calling
+     * @param string $url Beepsend API url that we are calling
      * @param string $method Request method
      * @param array $params Array of additional parameters
      * @return array
      */
-    public function execute($action, $method, $params)
+    public function call($url, $method, $params)
     {
         if ($method == 'GET') {
-            $action = $this->appendParamsToUrl($action, $params);
+            $url = $this->appendParamsToUrl($url, $params);
+        } else {
+            $this->addHeader('Content-Type', 'application/json');
+            $this->addHeader('Content-Length', strlen(json_encode($params)));
         }
         
-        $ch = curl_init($this->baseApiUrl . '/' . $this->version . $action);
-        curl_setopt($ch, CURLOPT_USERAGENT, $this->userAgent);
-        curl_setopt($ch, CURLOPT_HEADER, false);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
+        $this->makeConnection($url, $method, json_encode($params));
         
-        /* Set authorization token */
-        $headers = array('Authorization: Token ' . $this->token);
+        $response = $this->makeRequest();
+        $info = $this->getCurlInfo();
         
-        if ($method !== 'GET') {
-
-            $headers[] = 'Content-Type: application/json';
-            $headers[] = 'Content-Length: ' . strlen(json_encode($params));
-            
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($params));
-        }
-        
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        
-        if ($method == 'PUT' || $method == 'DELETE') {
-            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
-        }
-        
-        $response = curl_exec($ch);
-        $info = curl_getinfo($ch);
-        curl_close($ch);
+        $this->closeConnection();
         
         return array('info' => $info, 'response' => $response);
     }
     
     /**
      * Upload file to Beepsend API, currently supporting only POST method
-     * @param string $action Action that we are calling
+     * @param string $url Beepsend API url that we are calling
      * @param array $params Array of additional parameters
      * @param string $rawData String using this for posting file content
      * @return Beepsend\Response
      */
-    public function upload($action, $params, $rawData)
+    public function upload($url, $params, $rawData)
     {
-        $ch = curl_init($this->baseApiUrl . '/' . $this->version . $action);
-        curl_setopt($ch, CURLOPT_USERAGENT, $this->userAgent);
-        curl_setopt($ch, CURLOPT_HEADER, false);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
+        $this->addHeader('Content-Type', 'application/x-www-form-urlencoded');
+        $this->makeConnection($url, 'POST', count($params) > 0 ? $params : $rawData);
         
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(   
-            'Authorization: Token ' . $this->token,
-            'Content-Type: application/x-www-form-urlencoded'
-        ));
+        $response = $this->makeRequest();
+        $info = $this->getCurlInfo();
         
-        curl_setopt($ch, CURLOPT_POSTFIELDS, count($params) > 0 ? $params : $rawData);
-        
-        $response = curl_exec($ch);
-        $info = curl_getinfo($ch);
-        curl_close($ch);
+        $this->closeConnection();
         
         return array('info' => $info, 'response' => $response);
     }
     
     /**
-     * Append parameters to url, using for GET request.
-     * @param string $url Url that we will call
-     * @param array $parameters Array of parameters
+     * Make connection to Beepsend API
+     * @param string $url Beepsend API url that we are calling
+     * @param string $method Request method
+     * @param array $params Array of additional parameters
+     */
+    private function makeConnection($url, $method, $params)
+    {
+        $options = array(
+            CURLOPT_HEADER => false,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_BINARYTRANSFER => true
+        );
+        
+        if ($method !== 'GET') {
+            $options[CURLOPT_POSTFIELDS] = $params;
+        }
+        
+        if ($method == 'PUT' || $method == 'DELETE') {
+            $options[CURLOPT_CUSTOMREQUEST] = $method;
+        }
+        
+        $options[CURLOPT_HTTPHEADER] = $this->prepareHeaders();
+        
+        $this->curl = curl_init($url);
+        curl_setopt_array($this->curl, $options);
+    }
+    
+    /**
+     * Make request to server
      * @return string
      */
-    private function appendParamsToUrl($url, $parameters = array())
+    private function makeRequest()
     {
-        if (empty($parameters)) {
+        return curl_exec($this->curl);
+    }
+    
+    /**
+     * Get curl info
+     * @return array
+     */
+    public function getCurlInfo()
+    {
+        return curl_getinfo($this->curl);
+    }
+    
+    /**
+     * Close curl conenction
+     */
+    private function closeConnection()
+    {
+        curl_close($this->curl);
+    }
+    
+    /**
+     * Add request header
+     * @param string $name Name of header
+     * @param string $value Valud of header
+     */
+    public function addHeader($name, $value)
+    {
+        $this->headers[$name] = $value;
+    }
+    
+    /**
+     * Return headers for request
+     * @return string
+     */
+    private function prepareHeaders()
+    {
+        $header = array();
+        foreach($this->headers as $n => $v) {
+          $header[] = $n . ': ' . $v;
+        }
+
+        return $header;
+    }
+    
+    /**
+     * Append parameters to url, using for GET request.
+     * @param string $url Url that we will call
+     * @param array $params Array of parameters
+     * @return string
+     */
+    private function appendParamsToUrl($url, $params = array())
+    {
+        if (empty($params)) {
             return $url;
         }
         
-        return $url . '?' . http_build_query($parameters);
+        return $url . '?' . http_build_query($params);
     }
 }

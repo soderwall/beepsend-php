@@ -4,6 +4,7 @@ namespace Beepsend\Exception;
 
 /**
  * Throw when API returns internal error
+ * @package Beepsend
  */
 final class InternalError extends \Exception
 {

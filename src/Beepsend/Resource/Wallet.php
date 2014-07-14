@@ -3,9 +3,13 @@
 namespace Beepsend\Resource;
 
 use Beepsend\Request;
-use Beepsend\ResourceInterface;
 
-class Wallet implements ResourceInterface {
+/**
+ * Beepsend wallet resource
+ * @package Beepsend
+ */
+class Wallet 
+{
     
     /**
      * Beepsend request handler
@@ -21,7 +25,8 @@ class Wallet implements ResourceInterface {
         'wallets' => '/wallets/',
         'transactions' => '/transactions/',
         'transfer' => '/transfer/',
-        'notifications' => '/emails/'
+        'notifications' => '/emails/',
+        'topup' => '/topup/paypal/'
     );
     
     /**
@@ -79,10 +84,27 @@ class Wallet implements ResourceInterface {
     /**
      * Returns all transactions for wallet
      * @param int $walletId Wallet id
+     * @param string $sinceId Returns results more recent than the specified ID.
+     * @param string $maxId Returns results with an ID older than or equal to the specified ID.
+     * @param int $count How many objects to fetch. Maximum 200, default 200.
      * @return array
      */
-    public function transactions($walletId)
+    public function transactions($walletId, $sinceId = null, $maxId = null, $count = null)
     {
+        $data = array();
+        
+        if (!is_null($sinceId)) {
+            $data['since_id'] = $sinceId;
+        }
+        
+        if (!is_null($maxId)) {
+            $data['max_id'] = $maxId;
+        }
+        
+        if (!is_null($count)) {
+            $data['count'] = $count;
+        }
+        
         $response = $this->request->execute($this->actions['wallets'] . $walletId . $this->actions['transactions'], 'GET');
         return $response;
     }
@@ -101,6 +123,31 @@ class Wallet implements ResourceInterface {
         );
         
         $response = $this->request->execute($this->actions['wallets'] . $sourceId . $this->actions['transfer'] . $targetId . '/', 'POST', $data);
+        return $response;
+    }
+    
+    /**
+     * Add credit to wallet
+     * @param int $walletId Wallet add that we want to add credit
+     * @param int $amount Amount of money that we wan't to add
+     * @param string $returnUrl The URL to redirect a user when a payment is complete and successful. Default: https://beepsend.com/success.html
+     * @param string $cancleUrl The URL to redirect a user when a payment is aborted. Default: https://beepsend.com/cancel.html
+     */
+    public function topup($walletId, $amount, $returnUrl = null, $cancleUrl = null)
+    {
+        $data = array(
+            'amount' => $amount
+        );
+        
+        if (!is_null($returnUrl)) {
+            $data['url']['return'] = $returnUrl;
+        }
+        
+        if (!is_null($cancleUrl)) {
+            $data['url']['cacnle'] = $cancleUrl;
+        }
+        
+        $response = $this->request->execute($this->actions['wallets'] . $walletId . $this->actions['topup'], 'POST', $data);
         return $response;
     }
     

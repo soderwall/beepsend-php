@@ -3,9 +3,13 @@
 namespace Beepsend\Resource;
 
 use Beepsend\Request;
-use Beepsend\ResourceInterface;
 
-class Customer implements ResourceInterface {
+/**
+ * Beepsend customer resource
+ * @package Beepsend
+ */
+class Customer 
+{
     
     /**
      * Beepsend request handler

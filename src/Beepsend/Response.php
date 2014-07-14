@@ -2,7 +2,12 @@
 
 namespace Beepsend;
 
-class Response {
+/**
+ * Beepsend response
+ * @package Beepsend
+ */
+class Response 
+{
     
     /**
      * Response content type
@@ -11,16 +16,16 @@ class Response {
     private $contentType;
     
     /**
-     * Response from Beepsend API
-     * @var array
-     */
-    private $response;
-    
-    /**
      * Raw Response from Beepsend API
      * @var array
      */
     private $rawResponse;
+    
+    /**
+     * Set file name for download file
+     * @var string
+     */
+    private $fileName;
     
     /**
      * Init Beepsend response
@@ -29,12 +34,19 @@ class Response {
      */
     public function __construct($rawResponse, $info)
     {
-        $this->contentType = $info['content_type'] ? $info['content_type'] : $info['Content-Type'];
+        $this->contentType = isset($info['content_type']) ? $info['content_type'] : $info['Content-Type'];
         $this->rawResponse = $rawResponse;
-        
-        if ($this->contentType == 'application/json') {
-            $this->response = $this->parseResponse($rawResponse);
-        }
+    }
+    
+    /**
+     * Set file name to use when downloading some file
+     * @param string $fileName
+     * @return Beepsend\Response
+     */
+    public function setFileName($fileName)
+    {
+        $this->fileName = $fileName;
+        return $this;
     }
     
     /**
@@ -43,13 +55,18 @@ class Response {
      */
     public function get()
     {
-        return $this->response;
+        switch ($this->contentType) {
+            case 'application/json':
+                return $this->parseResponse($this->rawResponse);
+            case 'text/csv':
+                return $this->downloadCsv($this->fileName);
+        }
     }
     
     /**
      * Download CSV file from response and set proper headers
      */
-    public function getCsv($fileName)
+    private function downloadCsv($fileName)
     {
         header('Content-type: text/csv');
         header('Content-Disposition: attachment; filename=' . $fileName);

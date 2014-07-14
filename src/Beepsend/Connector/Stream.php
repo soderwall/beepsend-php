@@ -2,35 +2,14 @@
 
 namespace Beepsend\Connector;
 
-use Beepsend\ConnectorInterface;
+use Beepsend\Connector\ConnectorInterface;
 
+/**
+ * Beepsend stream connector
+ * @package Beepsend
+ */
 class Stream implements ConnectorInterface 
 {
-    
-    /**
-     * Beepsend API version
-     * @var int
-     */
-    private $version;
-    
-    /**
-     * Beepsend PHP library user agent
-     * @var string
-     */
-    private $userAgent;
-    
-    /**
-     * Beepsend API url
-     * @var string
-     */
-    private $baseApiUrl;
-    
-    /**
-     * User or Connection token to authorize on Beepsend API
-     * @var string
-     */
-    private $token;
-    
     /**
      * Array of request headers
      * @var array
@@ -44,24 +23,53 @@ class Stream implements ConnectorInterface
     private $responseHeaders;
     
     /**
-     * {@inheritdoc}
-     */
-    public function __construct($version, $userAgent, $baseApiUrl, $token)
-    {
-        $this->version = $version;
-        $this->userAgent = $userAgent;
-        $this->baseApiUrl = $baseApiUrl;
-        $this->token = $token;
-    }
-    
-    /**
      * Make some request over Beepsend API, supporting GET, POST, PUT and DELETE methods
-     * @param string $action Action that we are calling
+     * @param string $url Beepsend API url that we are calling
      * @param string $method Request method
      * @param array $params Array of additional parameters
      * @return array
      */
-    public function execute($action, $method, $params)
+    public function call($url, $method, $params)
+    {
+        if ($method == 'GET') {
+            $url = $this->appendParamsToUrl($url, $params);
+        } else {
+            $this->addHeader('Content-Type', 'application/json');
+            $this->addHeader('Content-Length', strlen(json_encode($params)));
+        }
+        
+        $context = $this->makeContext($method, json_encode($params));
+        $response = $this->getContent($url, $context);
+        $info = $this->formatHeadersToArray();
+        
+        return array('info' => $info, 'response' => $response);
+    }
+    
+    /**
+     * Upload file to Beepsend API, currently supporting only POST method
+     * @param string $url Beepsend API url that we are calling
+     * @param array $params Array of additional parameters
+     * @param string $rawData String using this for posting file content
+     * @return Beepsend\Response
+     */
+    public function upload($url, $params, $rawData)
+    {
+        $this->addHeader('Content-type', 'application/x-www-form-urlencoded');
+        
+        $context = $this->makeContext('POST', count($params) > 0 ? $params : $rawData);
+        $response = $this->getContent($url, $context);
+        $info = $this->formatHeadersToArray();
+        
+        return array('info' => $info, 'response' => $response);
+    }
+    
+    /**
+     * Make connection to Beepsend API
+     * @param string $action Action that we are calling
+     * @param string $method Request method
+     * @param array $params Array of additional parameters
+     */
+    private function makeContext($method, $params)
     {
         $options = array(
             'http' => array(
@@ -71,56 +79,15 @@ class Stream implements ConnectorInterface
             )
         );
         
-        if ($method == 'GET') {
-            $action = $this->appendParamsToUrl($action, $params);
-        }
-        
         $this->addHeader('Authorization', 'Token ' . $this->token);
+        $this->addHeader('User-agent', $this->userAgent);
         
-        if ($method !== 'GET') {
-            $this->addHeader('Content-Type', 'application/json');
-            $this->addHeader('Content-Length', strlen(json_encode($params)));
-            $options['http']['content'] = json_encode($params);
+        if ($method != 'GET') {
+            $options['http']['content'] = $params;
         }
         
         $options['http']['header'] = $this->prepareHeaders();
-        
-        $context = $this->createStreamContext($options);
-        $response = $this->getContent($action, $context);
-        $info = $this->formatHeadersToArray();
-        
-        return array('info' => $info, 'response' => $response);
-    }
-    
-    /**
-     * Upload file to Beepsend API, currently supporting only POST method
-     * @param string $action Action that we are calling
-     * @param array $params Array of additional parameters
-     * @param string $rawData String using this for posting file content
-     * @return Beepsend\Response
-     */
-    public function upload($action, $params, $rawData)
-    {
-        $options = array(
-            'http' => array(
-                'method' => 'POST',
-                'timeout' => 60,
-                'ignore_errors' => true
-            )
-        );
-        
-        $options['http']['content'] = count($params) > 0 ? $params : $rawData;
-        
-        $this->addHeader('Authorization', 'Token ' . $this->token);
-        $this->addHeader('Content-type', 'application/x-www-form-urlencoded');
-        
-        $options['http']['header'] = $this->prepareHeaders();
-        
-        $context = $this->createStreamContext($options);
-        $response = $this->getContent($action, $context);
-        $info = $this->formatHeadersToArray();
-        
-        return array('info' => $info, 'response' => $response);
+        return $this->createStreamContext($options);
     }
     
     /**
@@ -128,7 +95,7 @@ class Stream implements ConnectorInterface
      * @param string $name Name of header
      * @param string $value Valud of header
      */
-    private function addHeader($name, $value)
+    public function addHeader($name, $value)
     {
         $this->headers[$name] = $value;
     }
@@ -203,16 +170,16 @@ class Stream implements ConnectorInterface
     /**
      * Append parameters to url, using for GET request.
      * @param string $url Url that we will call
-     * @param array $parameters Array of parameters
+     * @param array $params Array of parameters
      * @return string
      */
-    private function appendParamsToUrl($url, $parameters = array())
+    private function appendParamsToUrl($url, $params = array())
     {
-        if (empty($parameters)) {
+        if (empty($params)) {
             return $url;
         }
         
-        return $url . '?' . http_build_query($parameters);
+        return $url . '?' . http_build_query($params);
     }
     
 }

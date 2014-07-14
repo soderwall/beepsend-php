@@ -3,9 +3,13 @@
 namespace Beepsend\Resource;
 
 use Beepsend\Request;
-use Beepsend\ResourceInterface;
 
-class Pricelist implements ResourceInterface {
+/**
+ * Beepsend pricelist resource
+ * @package Beepsend
+ */
+class Pricelist 
+{
     
     /**
      * Beepsend request handler
@@ -47,8 +51,8 @@ class Pricelist implements ResourceInterface {
      */
     public function download($connection)
     {
-        $response = $this->request->execute($this->actions['download'] . $connection . '.csv', 'GET');
-        return $response->getCsv($connection . '.csv');
+        $response = $this->request->download($connection . '.csv', $this->actions['download'] . $connection . '.csv', 'GET');
+        return $response;
     }
     
 }
