@@ -51,7 +51,7 @@ class Connection
      * @param string $connection Connection id
      * @return array
      */
-    public function data($connection = 'me')
+    public function get($connection = 'me')
     {
         $response = $this->request->execute($this->actions['connections'] . $connection, 'GET');
         return $response;

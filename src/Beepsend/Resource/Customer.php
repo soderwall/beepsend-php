@@ -38,7 +38,7 @@ class Customer
      * Get customer data
      * @return array
      */
-    public function data()
+    public function get()
     {
         $response = $this->request->execute($this->actions['data'], 'GET');
         return $response;

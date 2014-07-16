@@ -52,7 +52,7 @@ class Wallet
      * @param int $walletId Wallet id
      * @return array
      */
-    public function data($walletId)
+    public function get($walletId)
     {
         $response = $this->request->execute($this->actions['wallets'] . $walletId, 'GET');
         return $response;
