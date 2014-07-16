@@ -79,4 +79,25 @@ class MessageTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(null, $message[2]['error']);
     }
     
+    /**
+     * Test getting messages from helper
+     */
+    public function testGettingMessagesFromHelper()
+    {
+        $client = new Client('abc123');
+        $msgHelper = $client->getHelper('message');
+        
+        $msgHelper->message(46736007518, 'Beepsend', 'Hello World! 你好世界!');
+        $msgHelper->message(46736007518, 'Beep', 'Hello World! 你好世界!');
+        $messages = $msgHelper->get();
+        
+        $this->assertInternalType('array', $messages);
+        $this->assertEquals('Beepsend', $messages[0]['from']);
+        $this->assertEquals(46736007518, $messages[0]['to']);
+        $this->assertEquals('Hello World! 你好世界!', $messages[0]['message']);
+        $this->assertEquals('Beep', $messages[1]['from']);
+        $this->assertEquals(46736007518, $messages[1]['to']);
+        $this->assertEquals('Hello World! 你好世界!', $messages[1]['message']);
+    }
+    
 }
