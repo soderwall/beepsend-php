@@ -2,13 +2,11 @@
 
 namespace Beepsend\Helper;
 
-use Beepsend\Resource\Message as MessageResource;
-
 /**
  * Helper for sending messages
  * @package Beepsend
  */
-class Message extends MessageResource
+class Message
 {
     /**
      * Array of messages that we will send through this helper
@@ -44,24 +42,12 @@ class Message extends MessageResource
     }
     
     /**
-     * Send all set messages
-     * @param string $connection Connection id to use for sending sms
+     * Return all messages for sending
+     * @return array
      */
-    public function send($connection = null)
+    public function get()
     {
-        
-        $response = $this->request->execute($this->actions['sms'] . $connection, 'POST', $this->messages);
-        $this->resetMessages();
-        
-        return $response;
-    }
-    
-    /**
-     * Reset messages to empty array
-     */
-    public function resetMessages()
-    {
-        return $this->messages = array();
+        return $this->messages;
     }
     
 }
