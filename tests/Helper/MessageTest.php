@@ -100,4 +100,9 @@ class MessageTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('Hello World! 你好世界!', $messages[1]['message']);
     }
     
+    public function tearDown()
+    {
+        \Mockery::close();
+    }
+    
 }
