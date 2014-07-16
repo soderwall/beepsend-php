@@ -3,7 +3,7 @@
 use Beepsend\Client;
 use Beepsend\Connector\Curl;
 
-class AnalyticsTest extends PHPUnit_Framework_TestCase
+class AnalyticTest extends PHPUnit_Framework_TestCase
 {
     /**
      * Test getting accumulated Statistics
