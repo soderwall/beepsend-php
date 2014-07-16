@@ -96,18 +96,6 @@ class Message
     }
     
     /**
-     * Send multiple messages to one or more receivers.
-     * @param array $messages Messages that we want to send
-     * @param string $connection Connection id to use for sending sms
-     * @link http://api.beepsend.com/docs.html#send-sms-batch More information about sending messages in batches
-     */
-    public function batch($messages, $connection = null)
-    {
-        $response = $this->request->execute($this->actions['sms'] . $connection, 'POST', $messages);
-        return $response;
-    }
-    
-    /**
      * Send new binary SMS
      * @param int|string $to Number where we are sending message, for multiple recepiants use array (number1, number2)
      * @param int|array $from Number we are sending from or text
