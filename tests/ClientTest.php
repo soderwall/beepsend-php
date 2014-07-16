@@ -42,7 +42,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
     public function testInitialization()
     {
         $client = new Client('TokenThatDoesntExists');
-        $client->customer->data(); // Try to get customer data
+        $client->customer->get(); // Try to get customer data
     }
     
 }

@@ -27,7 +27,7 @@ class CustomerTest extends PHPUnit_Framework_TestCase
                     ));
         
         $client = new Client('abc123', $connector);
-        $customer = $client->customer->data();
+        $customer = $client->customer->get();
 
         $this->assertInternalType('array', $customer);
         $this->assertEquals(1, $customer['id']);
