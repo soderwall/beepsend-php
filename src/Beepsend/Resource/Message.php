@@ -16,13 +16,13 @@ class Message
      * Beepsend request handler
      * @var Beepsend\Request
      */
-    protected $request;
+    private $request;
     
     /**
      * Actions to call
      * @var array
      */
-    protected $actions = array(
+    private $actions = array(
         'sms' => '/sms/',
         'validate' => '/sms/validate/',
         'batches' => '/batches/',
