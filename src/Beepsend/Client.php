@@ -4,6 +4,7 @@ namespace Beepsend;
 
 use Beepsend\Request;
 use Beepsend\Exception\NotFoundResource;
+use Beepsend\Exception\NotFoundHelper;
 
 /**
  * Beepsend client
@@ -58,6 +59,15 @@ class Client
     }
     
     /**
+     * Load helper that user will work with
+     * @param string $helper
+     */
+    public function getHelper($helper)
+    {
+        return $this->loadHelper($helper);
+    }
+    
+    /**
      * Try to load resource
      * @param string $resource Resource name
      * @return Object Resource
@@ -72,5 +82,22 @@ class Client
         }
         
         throw new NotFoundResource('Resource ' . $resourceName . ' can not be found!');
+    }
+    
+    /**
+     * Try to load helper
+     * @param string $helper Helper name
+     * @return Object Resource
+     * @throws NotFoundResource
+     */
+    private function loadHelper($helper)
+    {
+        $helperName = ucfirst($helper);
+        if (file_exists(__DIR__ . '/Helper/' . $helperName . '.php')) {
+            $loadHelper = "Beepsend\Helper\\{$helperName}";
+            return new $loadHelper($this->request);
+        }
+        
+        throw new NotFoundHelper('Helper ' . $helperName . ' can not be found!');
     }
 }
