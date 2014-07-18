@@ -14,7 +14,7 @@ Installation of this library is available through Composer, so you will have to 
 
 Once you have installed the library, you will need to load Composer's autoloader (which registers all the required namespaces):
 ```php
-    require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/vendor/autoload.php';
 ```
 
 And you're ready to go!
@@ -30,20 +30,20 @@ php composer.phar install
 
 Sending sms is easy:
 ```php
-    require_once __DIR__ . '/vendor/autoload.php';
-    use Beepsend\Client;
-    
-    $client = new Client('userOrConnectionToken');
-    $client->message->send(46736007518, 'BEEPSEND', 'Hello World! 你好世界!');
+require_once __DIR__ . '/vendor/autoload.php';
+use Beepsend\Client;
+
+$client = new Client('userOrConnectionToken');
+$client->message->send(46736007518, 'BEEPSEND', 'Hello World! 你好世界!');
 ```
 
 ### Get customer data
 ```php
-    require_once __DIR__ . '/vendor/autoload.php';
-    use Beepsend\Client;
-    
-    $client = new Client('userOrConnectionToken');
-    $client->customer->get();
+require_once __DIR__ . '/vendor/autoload.php';
+use Beepsend\Client;
+
+$client = new Client('userOrConnectionToken');
+$client->customer->get();
 ```
 
 ## Tests
