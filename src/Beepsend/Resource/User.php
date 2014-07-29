@@ -50,7 +50,7 @@ class User
      * Get user details
      * @return array
      */
-    public function data()
+    public function get()
     {
         $response = $this->request->execute($this->actions['users'] . $this->user, 'GET');
         return $response;

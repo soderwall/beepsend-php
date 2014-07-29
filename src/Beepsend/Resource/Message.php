@@ -3,6 +3,7 @@
 namespace Beepsend\Resource;
 
 use Beepsend\Request;
+use Beepsend\Helper\Message as MessageHelper;
 
 /**
  * Beepsend message resource
@@ -96,14 +97,14 @@ class Message
     }
     
     /**
-     * Send multiple messages to one or more receivers.
-     * @param array $messages Messages that we want to send
+     * Send multiple messages to one or more receivers
+     * @param \Beepsend\Helper\Message $messages
      * @param string $connection Connection id to use for sending sms
-     * @link http://api.beepsend.com/docs.html#send-sms-batch More information about sending messages in batches
+     * @return array
      */
-    public function batch($messages, $connection = null)
+    public function multiple(MessageHelper $messages, $connection = null)
     {
-        $response = $this->request->execute($this->actions['sms'] . $connection, 'POST', $messages);
+        $response = $this->request->execute($this->actions['sms'] . $connection, 'POST', $messages->get());
         return $response;
     }
     

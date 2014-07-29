@@ -10,6 +10,8 @@ class ClientTest extends PHPUnit_Framework_TestCase
      */
     private $resources = '/../src/Beepsend/Resource/';
     
+    private $helpers = '/../src/Beepsend/Helper/';
+    
     /**
      * Array of files in resource that we can't load
      * @var array
@@ -35,6 +37,24 @@ class ClientTest extends PHPUnit_Framework_TestCase
     }
     
     /**
+     * We are using autoloading of helpers and we need to be sure that all helpers are loading.
+     */
+    public function testLoadingHelpers()
+    {
+        $helpers = scandir(__DIR__ . $this->helpers);
+        $client = new Client('TokenThatDoesntExists'); // We don't need valid token for loading of resources
+        
+        /* Try loading all resources */
+        foreach ($helpers as $helper) {
+            if (!in_array($helper, $this->ignoredResourceFiles)) {
+                $helperName = strtolower(pathinfo($helper, PATHINFO_FILENAME));
+                $loadedHelper = $client->getHelper($helperName);
+                $this->assertInstanceOf("Beepsend\Helper\\{$helperName}", $loadedHelper);
+            }
+        }
+    }
+    
+    /**
      * Test initialization of beepsend client. 
      * We should set some non existing token and client should return invalid token exception.
      * @expectedException Beepsend\Exception\InvalidToken
@@ -42,7 +62,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
     public function testInitialization()
     {
         $client = new Client('TokenThatDoesntExists');
-        $client->customer->data(); // Try to get customer data
+        $client->customer->get(); // Try to get customer data
     }
     
 }

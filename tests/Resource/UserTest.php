@@ -29,7 +29,7 @@ class UserTest extends PHPUnit_Framework_TestCase
                     ));
         
         $client = new Client('abc123', $connector);
-        $user = $client->user->data();
+        $user = $client->user->get();
         
         $this->assertInternalType('array', $user);
         $this->assertEquals(4, $user['id']);

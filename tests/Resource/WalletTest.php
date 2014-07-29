@@ -60,7 +60,7 @@ class WalletTest extends PHPUnit_Framework_TestCase
                     ));
         
         $client = new Client('abc123', $connector);
-        $wallet = $client->wallet->data(1);
+        $wallet = $client->wallet->get(1);
         
         $this->assertInternalType('array', $wallet);
         $this->assertEquals(1, $wallet['id']);

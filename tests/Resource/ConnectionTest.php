@@ -66,7 +66,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
                     ));
         
         $client = new Client('abc123', $connector);
-        $connection = $client->connection->data('me');
+        $connection = $client->connection->get('me');
         
         $this->assertInternalType('array', $connection);
         $this->assertEquals(1, $connection['id']);
