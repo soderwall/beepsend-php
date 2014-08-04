@@ -50,7 +50,7 @@ class Client
     
     /**
      * Load resource that user will work with
-     * @param string $resource Name of resource that we wan't to load
+     * @param string $resource Name of resource that we want to load
      * @return Object
      */
     public function __get($resource)

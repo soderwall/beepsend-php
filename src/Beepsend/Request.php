@@ -32,7 +32,7 @@ class Request
      * Beepsend PHP library user agent
      * @var string
      */
-    private $userAgent = 'beepsend-php-sdk-v0.1';
+    private $userAgent = 'beepsend-php-sdk-v1.0';
     
     /**
      * Beepsend API url
@@ -49,7 +49,7 @@ class Request
     /**
      * Set requred values for Beepsend request
      * @param string $token Token to work with
-     * @param object $connector Connector that we will use for 
+     * @param object $connector Connector that we will use 
      * @throws InvalidToken
      */
     public function __construct($token, $connector)
