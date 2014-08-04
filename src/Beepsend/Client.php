@@ -16,7 +16,7 @@ class Client
     /**
      * Version of Beepsend PHP helper
      */
-    public $version = '0.1';
+    public $version = '1.0';
     
     /**
      * Beepsend request handler
