@@ -79,9 +79,6 @@ class Stream implements ConnectorInterface
             )
         );
         
-        $this->addHeader('Authorization', 'Token ' . $this->token);
-        $this->addHeader('User-agent', $this->userAgent);
-        
         if ($method != 'GET') {
             $options['http']['content'] = $params;
         }
@@ -162,7 +159,7 @@ class Stream implements ConnectorInterface
      */
     private function getContent($action, $context)
     {
-        $rawResponse = file_get_contents($this->baseApiUrl . '/' . $this->version . $action, false, $context);
+        $rawResponse = file_get_contents($action, false, $context);
         $this->responseHeaders = $http_response_header;
         return $rawResponse;
     }
