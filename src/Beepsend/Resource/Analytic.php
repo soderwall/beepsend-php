@@ -37,7 +37,7 @@ class Analytic
     }
     
     /**
-     * Get accumulated Statistics, set connection for getting accumulated statictic for connection
+     * Get accumulated statistics, set connection for getting accumulated statictic for connection
      * @param string $connection Connection id
      * @param int $fromDate Unix time
      * @param int $toDate Unix time
@@ -93,7 +93,7 @@ class Analytic
     }
     
     /**
-     * This call will give you delivery statistics for a whole batch.
+     * This call will give you delivery statistics for a whole batch
      * @param int $batchId Batch id
      */
     public function batch($batchId = null)

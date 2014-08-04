@@ -57,7 +57,7 @@ class User
     }
     
     /**
-     * Update current user.
+     * Update current user
      * @param array $options Array of options that we wan't to update. 
      * @link http://api.beepsend.com/docs.html#user-update List if all options we can update
      * @return array
@@ -104,7 +104,7 @@ class User
     }
     
     /**
-     * Reset user password, beepsend will send you email.
+     * Reset user password, beepsend will send you email
      * @param string $email Your login email
      * @return array
      */
@@ -150,7 +150,7 @@ class User
     }
     
     /**
-     * An email will be sent out after changing your email address asking you to verify that you have indeed changed it. 
+     * An email will be sent out after changing your email address asking you to verify that you have indeed changed it.
      * Use the unique hash in the verification link to perform the verification.
      * @param string $hash
      * @return array
