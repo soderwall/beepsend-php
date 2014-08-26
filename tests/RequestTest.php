@@ -21,7 +21,7 @@ class RequestTest extends PHPUnit_Framework_TestCase
     public function testGettingUserAgent()
     {
         $request = new Request('SomeSecretToken', new Curl());
-        $this->assertEquals('beepsend-php-sdk-v0.1', $request->getUserAgent());
+        $this->assertEquals('beepsend-php-sdk-v1.0', $request->getUserAgent());
     }
     
     /**

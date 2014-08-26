@@ -16,7 +16,7 @@ class Client
     /**
      * Version of Beepsend PHP helper
      */
-    public $version = '0.1';
+    public $version = '1.0';
     
     /**
      * Beepsend request handler
@@ -50,7 +50,7 @@ class Client
     
     /**
      * Load resource that user will work with
-     * @param string $resource Name of resource that we wan't to load
+     * @param string $resource Name of resource that we want to load
      * @return Object
      */
     public function __get($resource)

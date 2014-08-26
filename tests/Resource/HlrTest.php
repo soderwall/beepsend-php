@@ -100,7 +100,7 @@ class HlrTest extends PHPUnit_Framework_TestCase
     {
         $connector = \Mockery::mock(new Curl());
         $connector->shouldReceive('call')
-                    ->with(BASE_API_URL . '/' . API_VERSION . '/hlr/validate', 'POST', array(
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/hlr/validate/', 'POST', array(
                         'msisdn' => 46736007518,
                         'connection' => 'me'
                     ))

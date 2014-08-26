@@ -38,7 +38,7 @@ class Contact
     }
     
     /**
-     * Get all contacts belonging to your user.
+     * Get all contacts belonging to your user
      * @param string $group Group id or name
      * @param string $options Array of additional options. More info on: http://api.beepsend.com/docs.html#contacts
      * @return array
@@ -113,7 +113,7 @@ class Contact
     }
     
     /**
-     * Get all contact groups belonging to your user.
+     * Get all contact groups belonging to your user
      * @param string $sinceId Returns results more recent than the specified ID.
      * @param string $maxId Returns results with an ID older than or equal to the specified ID.
      * @param int $count How many objects to fetch. Maximum 200, default 200.
@@ -166,7 +166,7 @@ class Contact
     }
     
     /**
-     * Update existing contact group.
+     * Update existing contact group
      * @param int $groupId Group id
      * @param string $groupName Group name
      * @return array

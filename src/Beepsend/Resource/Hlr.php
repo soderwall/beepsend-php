@@ -23,7 +23,7 @@ class Hlr
      */
     private $actions = array(
         'hlr' => '/hlr/',
-        'validate' => '/hlr/validate'
+        'validate' => '/hlr/validate/'
     );
     
     /**
