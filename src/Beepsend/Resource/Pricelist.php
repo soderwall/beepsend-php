@@ -23,8 +23,8 @@ class Pricelist
      */
     private $actions = array(
         'connections' => '/connections/',
-        'pricelists' => '/pricelists/current',
-        'download' => '/pricelists/'
+        'current' => '/pricelists/current',
+        'pricelists' => '/pricelists/',
     );
     
     /**
@@ -42,7 +42,18 @@ class Pricelist
      */
     public function get($conection = 'me')
     {
-        $response = $this->request->execute($this->actions['connections'] . $conection . $this->actions['pricelists'], 'GET');
+        $response = $this->request->execute($this->actions['connections'] . $conection . $this->actions['current'], 'GET');
+        return $response;
+    }
+    
+    /**
+     * Receive all price lists revisions for a specific connection related to the authenticated user
+     * @param string $conection
+     * @return array
+     */
+    public function revisions($conection = 'me')
+    {
+        $response = $this->request->execute($this->actions['connections'] . $conection . $this->actions['revisions'], 'GET');
         return $response;
     }
     
@@ -51,7 +62,7 @@ class Pricelist
      */
     public function download($connection)
     {
-        $response = $this->request->download($connection . '.csv', $this->actions['download'] . $connection . '.csv', 'GET');
+        $response = $this->request->download($connection . '.csv', $this->actions['pricelists'] . $connection . '.csv', 'GET');
         return $response;
     }
     
