@@ -53,7 +53,7 @@ class Pricelist
      */
     public function revisions($conection = 'me')
     {
-        $response = $this->request->execute($this->actions['connections'] . $conection . $this->actions['revisions'], 'GET');
+        $response = $this->request->execute($this->actions['connections'] . $conection . $this->actions['pricelists'], 'GET');
         return $response;
     }
     
