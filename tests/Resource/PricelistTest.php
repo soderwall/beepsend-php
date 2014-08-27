@@ -111,6 +111,54 @@ class PricelistTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(null, $pricelist);
     }
     
+    /**
+     * Test getting comperation of pricelists revisions and returning thair diff. 
+     */
+    public function testDiff()
+    {
+        $connector = \Mockery::mock(new Curl());
+        $connector->shouldReceive('call')
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/pricelists/1/4321..4371/diff', 'GET', array())
+                    ->once()
+                    ->andReturn(array(
+                        'info' => array(
+                            'http_code' => 200,
+                            'Content-Type' => 'application/json'
+                        ),
+                        'response' => json_encode(array(
+                            'country' => array(
+                                'name' => 'Zimbabwe',
+                                'prefix' => 263,
+                                'code' => 'ZW'
+                            ),
+                            'operator' => 'Telecel Zimbabwe (PVT) Ltd (TELECEL)',
+                            'mccmnc' => array(
+                                array(
+                                    'mnc' => '03',
+                                    'mcc' => '648'
+                                )
+                            ),
+                            'comment' => '',
+                            'price' => 0.006,
+                            'old_price' => 0.022,
+                            'diff' => 'price'
+                        ))
+                    ));
+        
+        $client = new Client('abc123', $connector);
+        $diff = $client->pricelist->diff(4321, 4371, 1);
+        
+        $this->assertInternalType('array', $diff);
+        $this->assertEquals('Zimbabwe', $diff['country']['name']);
+        $this->assertEquals(263, $diff['country']['prefix']);
+        $this->assertEquals('ZW', $diff['country']['code']);
+        $this->assertEquals('Telecel Zimbabwe (PVT) Ltd (TELECEL)', $diff['operator']);
+        $this->assertEquals('', $diff['comment']);
+        $this->assertEquals(0.006, $diff['price']);
+        $this->assertEquals(0.022, $diff['old_price']);
+        $this->assertEquals('price', $diff['diff']);
+    }
+    
     public function tearDown()
     {
         \Mockery::close();

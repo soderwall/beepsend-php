@@ -25,6 +25,7 @@ class Pricelist
         'connections' => '/connections/',
         'current' => '/pricelists/current',
         'pricelists' => '/pricelists/',
+        'diff' => '/diff'
     );
     
     /**
@@ -63,6 +64,19 @@ class Pricelist
     public function download($connection)
     {
         $response = $this->request->download($connection . '.csv', $this->actions['pricelists'] . $connection . '.csv', 'GET');
+        return $response;
+    }
+    
+    /**
+     * Compare pricelist revisions from given connection and return their diff.
+     * @param int $revision1
+     * @param int $revision2
+     * @param mixed $connection
+     * @return array
+     */
+    public function diff($revision1, $revision2, $connection)
+    {
+        $response = $this->request->execute($this->actions['pricelists'] . $connection . '/' . $revision1 . '..' . $revision2 . $this->actions['diff']);
         return $response;
     }
     
