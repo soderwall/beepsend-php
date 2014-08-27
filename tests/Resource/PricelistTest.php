@@ -53,6 +53,40 @@ class PricelistTest extends PHPUnit_Framework_TestCase
     }
     
     /**
+     * Test getting revisions
+     */
+    public function testRevisions()
+    {
+        $connector = \Mockery::mock(new Curl());
+        $connector->shouldReceive('call')
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/connections/me/pricelists/', 'GET', array())
+                    ->once()
+                    ->andReturn(array(
+                        'info' => array(
+                            'http_code' => 200,
+                            'Content-Type' => 'application/json'
+                        ),
+                        'response' => json_encode(array(
+                            'networks_count' => 980,
+                            'id' => 280290,
+                            'timestamp' => 1386085000,
+                            'active' => true,
+                            'first_viewed' => 1386228799
+                        ))
+                    ));
+        
+        $client = new Client('abc123', $connector);
+        $revisions = $client->pricelist->revisions();
+        
+        $this->assertInternalType('array', $revisions);
+        $this->assertEquals(980, $revisions['networks_count']);
+        $this->assertEquals(280290, $revisions['id']);
+        $this->assertEquals(1386085000, $revisions['timestamp']);
+        $this->assertEquals(true, $revisions['active']);
+        $this->assertEquals(1386228799, $revisions['first_viewed']);
+    }
+    
+    /**
      * Test downloading pricelists
      */
     public function testDownload()
