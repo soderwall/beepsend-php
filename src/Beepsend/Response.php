@@ -59,7 +59,7 @@ class Response
             case 'application/json':
                 return $this->parseResponse($this->rawResponse);
             case 'text/csv':
-            case 'text/plain':
+            case 'text/octect-stream':
                 return $this->downloadCsv($this->fileName);
         }
     }
