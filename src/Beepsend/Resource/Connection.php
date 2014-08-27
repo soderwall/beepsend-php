@@ -24,7 +24,8 @@ class Connection
     private $actions = array(
         'connections' => '/connections/',
         'tokenreset' => '/tokenreset',
-        'passwordreset' => '/passwordreset'
+        'passwordreset' => '/passwordreset',
+        'numbers' => '/numbers/'
     );
     
     /**
@@ -88,6 +89,16 @@ class Connection
     public function resetPassword($connection = 'me')
     {
         $response = $this->request->execute($this->actions['connections'] . $connection . $this->actions['passwordreset'], 'GET');
+        return $response;
+    }
+    
+    /**
+     * Recive list of recipient numbers which can receive mobile originated messages
+     * @return array
+     */
+    public function recipientNumbers()
+    {
+        $response = $this->request->execute($this->actions['numbers'], 'GET');
         return $response;
     }
     
