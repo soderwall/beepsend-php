@@ -32,9 +32,74 @@
 
         <section id="main_content">
           <h1>
-<a name="beepsend-php" class="anchor" href="#beepsend-php"><span class="octicon octicon-link"></span></a>beepsend-php</h1>
+<a name="beepsend-helper-for-php" class="anchor" href="#beepsend-helper-for-php"><span class="octicon octicon-link"></span></a>Beepsend helper for PHP</h1>
 
-<p>A helper library to connect to Beepsend API</p>
+<p>This repository contains the open source PHP helper that allows you to access Beepsend platform from your PHP app.</p>
+
+<h2>
+<a name="instalation" class="anchor" href="#instalation"><span class="octicon octicon-link"></span></a>Instalation</h2>
+
+<p>Installation of this library is available through Composer, so you will have to add a require entry for the Beepsend PHP library to the composer.json file in the root of your project:</p>
+
+<pre><code>{
+  "require" : {
+    "beepsend/beepsend-php" : "1.0.*"
+  }
+}
+</code></pre>
+
+<p>Once you have installed the library, you will need to load Composer's autoloader (which registers all the required namespaces):</p>
+
+<div class="highlight highlight-php"><pre><span class="k">require_once</span> <span class="nx">__DIR__</span> <span class="o">.</span> <span class="s1">'/vendor/autoload.php'</span><span class="p">;</span>
+</pre></div>
+
+<p>And you're ready to go!</p>
+
+<p>Alternatively, if you would like to fork or clone the repository into a directory (to work and submit pull requests), you will need to execute:</p>
+
+<div class="highlight highlight-bash"><pre>php composer.phar install
+</pre></div>
+
+<h2>
+<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h2>
+
+<h4>
+<a name="send-sms" class="anchor" href="#send-sms"><span class="octicon octicon-link"></span></a>Send SMS</h4>
+
+<p>Sending sms is easy:</p>
+
+<div class="highlight highlight-php"><pre><span class="k">require_once</span> <span class="nx">__DIR__</span> <span class="o">.</span> <span class="s1">'/vendor/autoload.php'</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">Beepsend\Client</span><span class="p">;</span>
+
+<span class="nv">$client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Client</span><span class="p">(</span><span class="s1">'userOrConnectionToken'</span><span class="p">);</span>
+<span class="nv">$client</span><span class="o">-&gt;</span><span class="na">message</span><span class="o">-&gt;</span><span class="na">send</span><span class="p">(</span><span class="mi">46736007518</span><span class="p">,</span> <span class="s1">'BEEPSEND'</span><span class="p">,</span> <span class="s1">'Hello World! 你好世界!'</span><span class="p">);</span>
+</pre></div>
+
+<h3>
+<a name="get-customer-data" class="anchor" href="#get-customer-data"><span class="octicon octicon-link"></span></a>Get customer data</h3>
+
+<div class="highlight highlight-php"><pre><span class="k">require_once</span> <span class="nx">__DIR__</span> <span class="o">.</span> <span class="s1">'/vendor/autoload.php'</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">Beepsend\Client</span><span class="p">;</span>
+
+<span class="nv">$client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Client</span><span class="p">(</span><span class="s1">'userOrConnectionToken'</span><span class="p">);</span>
+<span class="nv">$client</span><span class="o">-&gt;</span><span class="na">customer</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">();</span>
+</pre></div>
+
+<h2>
+<a name="tests" class="anchor" href="#tests"><span class="octicon octicon-link"></span></a>Tests</h2>
+
+<p>The tests can be executed by running this command from the root directory:</p>
+
+<div class="highlight highlight-bash"><pre>./vendor/bin/phpunit -c tests/
+</pre></div>
+
+<h2>
+<a name="requirements" class="anchor" href="#requirements"><span class="octicon octicon-link"></span></a>Requirements</h2>
+
+<ul>
+<li>PHP &gt;= 5.3.4</li>
+<li>JSON extension for PHP</li>
+</ul>
         </section>
 
         <footer>
