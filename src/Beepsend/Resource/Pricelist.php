@@ -80,4 +80,17 @@ class Pricelist
         return $response;
     }
     
+    /**
+     * Compare pricelist revisions from given connection and return their diff as csv file.
+     * @param int $revision1
+     * @param int $revision2
+     * @param midex $connection
+     * @return array
+     */
+    public function downloadDiff($revision1, $revision2, $connection)
+    {
+        $response = $this->request->download($connection . '.csv', $this->actions['pricelists'] . $connection . '/' . $revision1 . '..' . $revision2 . $this->actions['diff'] . '.csv', 'GET');
+        return $response;
+    }
+    
 }

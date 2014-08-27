@@ -159,6 +159,31 @@ class PricelistTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('price', $diff['diff']);
     }
     
+    /**
+     * Test getting compared pricelist revisions from given connection and return their diff as csv file.
+     */
+    public function testDownloadDiff()
+    {
+        $connector = \Mockery::mock(new Curl());
+        $connector->shouldReceive('call')
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/pricelists/1/4321..4371/diff.csv', 'GET', array())
+                    ->once()
+                    ->andReturn(array(
+                        'info' => array(
+                            'http_code' => 200,
+                            'Content-Type' => 'application/json'
+                        ),
+                        'response' => 'mcc;mnc;operator;price;price_diff;diff'
+                                    . '240;;Default;0.08;0.011;price'
+                                    . '240;01;"TeliaSonera Mobile Networks AB Sweden (TeliaSonera Mobile Networks)";;0;removed'
+                    ));
+        
+        $client = new Client('abc123', $connector);
+        $diff = $client->pricelist->downloadDiff(4321, 4371, 1);
+        
+        $this->assertEquals(null, $diff);
+    }
+    
     public function tearDown()
     {
         \Mockery::close();
