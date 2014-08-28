@@ -293,6 +293,45 @@ class MessageTest extends PHPUnit_Framework_TestCase
     }
     
     /**
+     * Test getting paginated overview of messages in a batch, complete with sent and recieved message body. 
+     */
+    public function testTwoWayBatches()
+    {
+        $connector = \Mockery::mock(new Curl());
+        $connector->shouldReceive('call')
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/batches/123/messages/', 'GET', array(
+                        'count' => 200,
+                        'offset' => 0
+                    ))
+                    ->once()
+                    ->andReturn(array(
+                        'info' => array(
+                            'http_code' => 200,
+                            'Content-Type' => 'application/json'
+                        ),
+                        'response' => json_encode(array(
+                            array(
+                                'mt_sms_id' => 889000680270500421,
+                                'mt_body' => 'What is your name?',
+                                'mo_sms_id' => 889000680270500422,
+                                'mo_body' => 'Sir Lancelot',
+                                'dlr_stat' => 'DELIVRD'
+                            )
+                        ))
+                    ));
+        
+        $client = new Client('abc123', $connector);
+        $messages = $client->message->twoWayBatch(123);
+        
+        $this->assertInternalType('array', $messages);
+        $this->assertEquals(889000680270500421, $messages[0]['mt_sms_id']);
+        $this->assertEquals('What is your name?', $messages[0]['mt_body']);
+        $this->assertEquals(889000680270500422, $messages[0]['mo_sms_id']);
+        $this->assertEquals('Sir Lancelot', $messages[0]['mo_body']);
+        $this->assertEquals('DELIVRD', $messages[0]['dlr_stat']);
+    }
+    
+    /**
      * Test call for estimation
      */
     public function testEstimationCost()

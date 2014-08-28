@@ -26,7 +26,8 @@ class Message
         'sms' => '/sms/',
         'validate' => '/sms/validate/',
         'batches' => '/batches/',
-        'estimation' => 'costestimate/'
+        'estimation' => 'costestimate/',
+        'messages' => '/messages/'
     );
     
     /**
@@ -193,6 +194,21 @@ class Message
     public function batches()
     {
         $response = $this->request->execute($this->actions['batches'], 'GET');
+        return $response;
+    }
+    
+    /**
+     * This call will give a paginated overview of messages in a batch, complete with sent and recieved message body. 
+     * @param int $batchId
+     */
+    public function twoWayBatch($batchId, $count = 200, $offset = 0)
+    {
+        $data = array(
+            'count' => $count,
+            'offset' => $offset
+        );
+        
+        $response = $this->request->execute($this->actions['batches'] . $batchId . $this->actions['messages'], 'GET', $data);
         return $response;
     }
     
