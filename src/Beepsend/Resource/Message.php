@@ -27,7 +27,8 @@ class Message
         'validate' => '/sms/validate/',
         'batches' => '/batches/',
         'estimation' => 'costestimate/',
-        'messages' => '/messages/'
+        'messages' => '/messages/',
+        'conversations' => '/conversations/'
     );
     
     /**
@@ -248,6 +249,16 @@ class Message
         );
         
         $response = $this->request->execute($this->actions['sms'] . $this->actions['estimation'] . $connection, 'POST', $data);
+        return $response;
+    }
+    
+    /**
+     * List your user conversations
+     * @return array
+     */
+    public function conversations()
+    {
+        $response = $this->request->execute($this->actions['conversations'], 'GET');
         return $response;
     }
     
