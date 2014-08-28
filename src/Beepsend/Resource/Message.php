@@ -262,4 +262,15 @@ class Message
         return $response;
     }
     
+    /**
+     * List all messages sent back and forth in to a single contact/number.
+     * @param string $id
+     * @return array
+     */
+    public function fullConversation($id, $options = array())
+    {
+        $response = $this->request->execute($this->actions['conversations'] . $id, 'GET', $options);
+        return $response;
+    }
+    
 }

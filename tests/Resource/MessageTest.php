@@ -445,6 +445,60 @@ class MessageTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(1383225355, $conversations[0]['timestamp']);
     }
     
+    /**
+     * Test list all messages sent back and forth in to a single contact/number.
+     */
+    public function testFullConversations()
+    {
+        $connector = \Mockery::mock(new Curl());
+        $connector->shouldReceive('call')
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/conversations/123', 'GET', array())
+                    ->once()
+                    ->andReturn(array(
+                        'info' => array(
+                            'http_code' => 200,
+                            'Content-Type' => 'application/json'
+                        ),
+                        'response' => json_encode(array(
+                            array(
+                                'id' => '46736007500-46736000005',
+                                'to' => 46736007500,
+                                'from' => array(
+                                    'number' => 46736000005,
+                                    'contact' => array(
+                                        'id' => 10,
+                                        'firstname' => 'Foo',
+                                        'lastname' => 'Bar'
+                                    )
+                                ),
+                                'body' => 'Hi. This is a test message',
+                                'timestamp' => 1383225355,
+                                'items' => array(
+                                    'id' => 12345,
+                                    'batch' => null,
+                                    'body' => 'Hello world!'
+                                )
+                            )
+                        ))
+                    ));
+        
+        $client = new Client('abc123', $connector);
+        $conversations = $client->message->fullConversation('123');
+        
+        $this->assertInternalType('array', $conversations);
+        $this->assertEquals('46736007500-46736000005', $conversations[0]['id']);
+        $this->assertEquals(46736007500, $conversations[0]['to']);
+        $this->assertEquals(46736000005, $conversations[0]['from']['number']);
+        $this->assertEquals(10, $conversations[0]['from']['contact']['id']);
+        $this->assertEquals('Foo', $conversations[0]['from']['contact']['firstname']);
+        $this->assertEquals('Bar', $conversations[0]['from']['contact']['lastname']);
+        $this->assertEquals('Hi. This is a test message', $conversations[0]['body']);
+        $this->assertEquals(1383225355, $conversations[0]['timestamp']);
+        $this->assertEquals(12345, $conversations[0]['items']['id']);
+        $this->assertEquals(null, $conversations[0]['items']['batch']);
+        $this->assertEquals('Hello world!', $conversations[0]['items']['body']);
+    }
+    
     public function tearDown()
     {
         \Mockery::close();
