@@ -189,6 +189,46 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('abc12345', $connection['password']);
     }
     
+    /**
+     * Test getting recipient numbers
+     */
+    public function testGettingRecipientNumbers()
+    {
+        $connector = \Mockery::mock(new Curl());
+        $connector->shouldReceive('call')
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/numbers/', 'GET', array())
+                    ->once()
+                    ->andReturn(array(
+                        'info' => array(
+                            'http_code' => 200,
+                            'Content-Type' => 'application/json'
+                        ),
+                        'response' => json_encode(array(
+                            'connection' => array(
+                                'id' => 1,
+                                'name' => 'your-account'
+                            ),
+                            'country' => array(
+                                'id' => 1,
+                                'name' => 'Denmark'
+                            ),
+                            'id' => 350,
+                            'number' => 1272
+                        ))
+                    ));
+        
+        $client = new Client('abc123', $connector);
+        $numbers = $client->connection->recipientNumbers();
+        
+        $this->assertInternalType('array', $numbers);
+        $this->assertEquals(350, $numbers['id']);
+        $this->assertEquals(1272, $numbers['number']);
+        $this->assertEquals(1, $numbers['connection']['id']);
+        $this->assertEquals('your-account', $numbers['connection']['name']);
+        $this->assertEquals(1, $numbers['country']['id']);
+        $this->assertEquals('Denmark', $numbers['country']['name']);
+    }
+    
     public function tearDown()
     {
         \Mockery::close();

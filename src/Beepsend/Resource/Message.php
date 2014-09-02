@@ -26,7 +26,9 @@ class Message
         'sms' => '/sms/',
         'validate' => '/sms/validate/',
         'batches' => '/batches/',
-        'estimation' => 'costestimate/'
+        'estimation' => 'costestimate/',
+        'messages' => '/messages/',
+        'conversations' => '/conversations/'
     );
     
     /**
@@ -197,6 +199,21 @@ class Message
     }
     
     /**
+     * This call will give a paginated overview of messages in a batch, complete with sent and recieved message body. 
+     * @param int $batchId
+     */
+    public function twoWayBatch($batchId, $count = 200, $offset = 0)
+    {
+        $data = array(
+            'count' => $count,
+            'offset' => $offset
+        );
+        
+        $response = $this->request->execute($this->actions['batches'] . $batchId . $this->actions['messages'], 'GET', $data);
+        return $response;
+    }
+    
+    /**
      * Estimate cost
      * @param int|array $to Msisdn or array of msisdns
      * @param string $message Message
@@ -232,6 +249,27 @@ class Message
         );
         
         $response = $this->request->execute($this->actions['sms'] . $this->actions['estimation'] . $connection, 'POST', $data);
+        return $response;
+    }
+    
+    /**
+     * List your user conversations
+     * @return array
+     */
+    public function conversations()
+    {
+        $response = $this->request->execute($this->actions['conversations'], 'GET');
+        return $response;
+    }
+    
+    /**
+     * List all messages sent back and forth in to a single contact/number.
+     * @param string $id
+     * @return array
+     */
+    public function fullConversation($id, $options = array())
+    {
+        $response = $this->request->execute($this->actions['conversations'] . $id, 'GET', $options);
         return $response;
     }
     

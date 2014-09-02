@@ -1,5 +1,5 @@
 {
-    "name": "Beepsend-php",
+    "name": "Beepsend/php-sdk",
     "require": {
         "php": ">=5.3.4"
     },

@@ -4,25 +4,29 @@ This repository contains the open source PHP helper that allows you to access Be
 ## Instalation
 Installation of this library is available through Composer, so you will have to add a require entry for the Beepsend PHP library to the composer.json file in the root of your project:
 
-```
-{
-  "require" : {
-    "beepsend/beepsend-php" : "1.0.*"
-  }
-}
-```
+
+    {
+      "require" : {
+        "beepsend/beepsend-php" : "1.0.*"
+      }
+    }
+
+Or you can clone it with [git](http://git-scm.com/) from our repository
+    
+    git clone https://github.com/beepsend/beepsend-php.git
+
+Or download the repository as a [zip file](https://github.com/beepsend/beepsend-php/archive/master.zip).
+
+After this you will have to run composer in order to install autoloader and phpunit for tests
+
+    php composer install
 
 Once you have installed the library, you will need to load Composer's autoloader (which registers all the required namespaces):
-```php
-require_once __DIR__ . '/vendor/autoload.php';
-```
+
+    require_once __DIR__ . '/vendor/autoload.php';
+
 
 And you're ready to go!
-
-Alternatively, if you would like to fork or clone the repository into a directory (to work and submit pull requests), you will need to execute:
-
-```bash
-php composer.phar install
 ```
 
 ## Usage
