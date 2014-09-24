@@ -164,12 +164,11 @@ class Message
      * @param int|array $to Number where we are sending message, for multiple recepiants use array (number1, number2)
      * @param int|string $from Number we are sending from or text
      * @param string $message Message we are sending
-     * @param string $connection Connection id to use for sending sms
      * @param string $encoding Encoding of message UTF-8, ISO-8859-15 or Unicode
      * @param array $options Array of additional options. More info on: http://api.beepsend.com/docs.html#send-sms
      * @return array
      */
-    public function validate($to, $from, $message, $connection = null, $encoding = 'UTF-8', $options = array())
+    public function validate($to, $from, $message, $encoding = 'UTF-8', $options = array())
     {
         $data = array(
             'from' => $from,
@@ -184,7 +183,7 @@ class Message
             $data = array_merge($data, $options);
         }
         
-        $response = $this->request->execute($this->actions['validate'] . $connection, 'POST', $data);
+        $response = $this->request->execute($this->actions['validate'], 'POST', $data);
         return $response;
     }
     

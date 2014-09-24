@@ -64,9 +64,9 @@ class Hlr
      * @param string $connection Connection id
      * @return array
      */
-    public function validate($msisdn, $connection = 'me')
+    public function validate($msisdn)
     {
-        $response = $this->request->execute($this->actions['validate'], 'POST', array('msisdn' => $msisdn, 'connection' => $connection));
+        $response = $this->request->execute($this->actions['validate'], 'POST', array('msisdn' => $msisdn));
         return $response;
     }
     
