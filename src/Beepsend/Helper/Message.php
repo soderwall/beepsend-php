@@ -29,8 +29,7 @@ class Message
             'from' => $from,
             'to' => $to,
             'message' => mb_convert_encoding($message, $encoding, 'UTF-8'),
-            'encoding' => $encoding,
-            'receive_dlr' => 0
+            'encoding' => $encoding
         );
                 
         /* Merge additional options if we have */
