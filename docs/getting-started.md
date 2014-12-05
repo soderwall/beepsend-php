@@ -7,7 +7,7 @@ Installation of this library is available through Composer, so you will have to 
 
     {
       "require" : {
-        "beepsend/beepsend-php" : "1.0.*"
+        "beepsend/php-sdk": "dev-master"
       }
     }
 
