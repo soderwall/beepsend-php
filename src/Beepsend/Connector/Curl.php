@@ -3,6 +3,7 @@
 namespace Beepsend\Connector;
 
 use Beepsend\Connector\ConnectorInterface;
+use Beepsend\Exception\ConnectionError;
 
 /**
  * Beepsend curl connector
@@ -42,6 +43,11 @@ class Curl implements ConnectorInterface
         
         $response = $this->makeRequest();
         $info = $this->getCurlInfo();
+        $errors = $this->getCurlError();
+        
+        if($errors) {
+            throw new ConnectionError($errors);
+        }
         
         $this->closeConnection();
         
@@ -62,6 +68,11 @@ class Curl implements ConnectorInterface
         
         $response = $this->makeRequest();
         $info = $this->getCurlInfo();
+        $errors = $this->getCurlError();
+        
+        if($errors) {
+            throw new ConnectionError($errors);
+        }
         
         $this->closeConnection();
         
@@ -112,6 +123,15 @@ class Curl implements ConnectorInterface
     public function getCurlInfo()
     {
         return curl_getinfo($this->curl);
+    }
+    
+    /**
+     * Get curl error message
+     * @return string
+     */
+    public function getCurlError()
+    {
+        return curl_error($this->curl);
     }
     
     /**
