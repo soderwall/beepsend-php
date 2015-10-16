@@ -46,6 +46,7 @@ class Request
      */
     private $connector;
 
+
     /**
      * Set requred values for Beepsend request
      * @param string $token Token to work with
@@ -173,13 +174,19 @@ class Request
      */
     private function parseError($rawResponse)
     {
-        $errors = array();
+        $errors =[];
         $response = json_decode($rawResponse, true);
-
         if (isset($response['errors'])) {
             $errors = $response['errors'];
-        } else if ($response[0]['errors']) {
+        } elseif (isset($response[0]['errors'])) {
             $errors = $response[0]['errors'];
+        } elseif (isset($response[0]['description'])) {
+            $errors[] = $response[0]['description'];
+        } elseif (empty($errors)) {
+            $errors =
+                [
+                    'description' => 'There was an unidentified error with your request'
+                ];
         }
 
         return $this->joinErrros($errors);

@@ -64,7 +64,6 @@ class Message
         if (!empty($options)) {
             $data = array_merge($data, $options);
         }
-
         $response = $this->request->execute($this->actions['send'] . $connection, 'POST', $data);
         return $response;
     }
