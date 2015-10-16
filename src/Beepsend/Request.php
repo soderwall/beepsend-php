@@ -13,43 +13,44 @@ use Beepsend\Exception\RateLimit;
  * Beepsend request
  * @package Beepsend
  */
-class Request 
+class Request
 {
-    
+
     /**
      * Beepsend user or connection token that we are using to authorize on Beepsend API
-     * @var string 
+     * @var string
      */
     private $token;
-    
+
     /**
      * Beepsend API version
      * @var int
      */
     private $version = 2;
-    
+
     /**
      * Beepsend PHP library user agent
      * @var string
      */
     private $userAgent = 'beepsend-php-sdk-v1.0';
-    
+
     /**
      * Beepsend API url
      * @var string
      */
     private $baseApiUrl = 'https://api.beepsend.com';
-    
+
     /**
      * Connector that we will use to communicate with API
      * @var Object
      */
     private $connector;
-    
+
+
     /**
      * Set requred values for Beepsend request
      * @param string $token Token to work with
-     * @param object $connector Connector that we will use 
+     * @param object $connector Connector that we will use
      * @throws InvalidToken
      */
     public function __construct($token, $connector)
@@ -57,7 +58,7 @@ class Request
         $this->token = $token;
         $this->connector = $connector;
     }
-    
+
     /**
      * Make some request over Beepsend API, supporting GET, POST, PUT and DELETE methods
      * @param string $action Action that we are calling
@@ -69,11 +70,11 @@ class Request
     {
         $this->connector->addHeader('User-Agent', $this->userAgent);
         $this->connector->addHeader('Authorization', 'Token ' . $this->token);
-        
+
         $rawResponse = $this->connector->call($this->baseApiUrl . '/' . $this->version . $action, $method, $params);
         return $this->response($rawResponse['info'], $rawResponse['response'])->get();
     }
-    
+
     /**
      * Make request over Beepsend API to download some file
      * @param string $fileName Name of file
@@ -86,13 +87,13 @@ class Request
     {
         $this->connector->addHeader('User-Agent', $this->userAgent);
         $this->connector->addHeader('Authorization', 'Token ' . $this->token);
-        
+
         $rawResponse = $this->connector->call($this->baseApiUrl . '/' . $this->version . $action, $method, $params);
         return $this->response($rawResponse['info'], $rawResponse['response'])
                 ->setFileName($fileName)
                 ->get();
     }
-    
+
     /**
      * Upload file to Beepsend API, currently supporting only POST method
      * @param string $action Action that we are calling
@@ -104,11 +105,11 @@ class Request
     {
         $this->connector->addHeader('User-Agent', $this->userAgent);
         $this->connector->addHeader('Authorization', 'Token ' . $this->token);
-        
+
         $rawResponse = $this->connector->upload($this->baseApiUrl . '/' . $this->version . $action, $params, $rawData);
         return $this->response($rawResponse['info'], $rawResponse['response'])->get();
     }
-    
+
     /**
      * Return Beepsend API version
      * @return int
@@ -117,7 +118,7 @@ class Request
     {
         return $this->version;
     }
-    
+
     /**
      * Return library user agent
      * @return string
@@ -126,7 +127,7 @@ class Request
     {
         return $this->userAgent;
     }
-    
+
     /**
      * Return Beepsend base API url
      * @return string
@@ -135,7 +136,7 @@ class Request
     {
         return $this->baseApiUrl;
     }
-    
+
     /**
      * Return valid response based on respond from Beepsend API url
      * @param array $info Curl info
@@ -165,26 +166,32 @@ class Request
                 throw new RateLimit('Too many requests. Please try again later.');
         }
     }
-    
+
     /**
      * Parse raw response
-     * @param string $rawResponse 
+     * @param string $rawResponse
      * @return string
      */
     private function parseError($rawResponse)
     {
-        $errors = array();
+        $errors =[];
         $response = json_decode($rawResponse, true);
-        
         if (isset($response['errors'])) {
             $errors = $response['errors'];
-        } else if ($response[0]['errors']) {
+        } elseif (isset($response[0]['errors'])) {
             $errors = $response[0]['errors'];
+        } elseif (isset($response[0]['description'])) {
+            $errors[] = $response[0]['description'];
+        } elseif (empty($errors)) {
+            $errors =
+                [
+                    'description' => 'There was an unidentified error with your request'
+                ];
         }
-        
+
         return $this->joinErrros($errors);
     }
-    
+
     /**
      * Create one string from array of errors
      * @param array $errors
@@ -193,13 +200,13 @@ class Request
     private function joinErrros($errors)
     {
         $response = null;
-        
+
         foreach ($errors as $error) {
             $code = isset($error['code']) ? 'Code: ' . $error['code'] . ' ' : null;
             $description = isset($error['description']) ? $error['description'] : $error;
             $response .= $code . $description;
         }
-        
+
         return $response;
     }
 }

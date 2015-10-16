@@ -13,7 +13,7 @@ class Message
      * @var array
      */
     private $messages = array();
-    
+
     /**
      * Create new message to send
      * @param int|string $to Number where we are sending message, for multiple recepiants use array (number1, number2)
@@ -31,15 +31,15 @@ class Message
             'message' => mb_convert_encoding($message, $encoding, 'UTF-8'),
             'encoding' => $encoding
         );
-                
+
         /* Merge additional options if we have */
         if (!empty($options)) {
             $data = array_merge($data, $options);
         }
-        
-        $this->messages[] = $data;
+
+        $this->messages = $data;
     }
-    
+
     /**
      * Return all messages for sending
      * @return array
@@ -48,5 +48,5 @@ class Message
     {
         return $this->messages;
     }
-    
+
 }

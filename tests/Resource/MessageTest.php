@@ -5,124 +5,156 @@ use Beepsend\Connector\Curl;
 
 class MessageTest extends PHPUnit_Framework_TestCase
 {
-    
+
     /**
      * Test sending messages
      */
-    public function testSending()
-    {
+    public function testSending() {
         $connector = \Mockery::mock(new Curl());
         $connector->shouldReceive('call')
-                    ->with(BASE_API_URL . '/' . API_VERSION . '/sms/', 'POST', array(
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/send/', 'POST', [
                         'from' => 'Beepsend',
-                        'to' => 46736007518,
+                        'to' => '46736007518',
                         'message' => 'Hello World! 你好世界!',
-                        'encoding' => 'UTF-8',
-                        'receive_dlr' => 0
-                    ))
+                        'encoding' => 'UTF-8'
+                    ])
                     ->once()
-                    ->andReturn(array(
-                        'info' => array(
+                    ->andReturn([
+                        'info' => [
                             'http_code' => 200,
                             'Content-Type' => 'application/json'
-                        ),
-                        'response' => json_encode(array(
-                            'id' => 07595980013893439611559146736007518,
-                            'to' => 46736007518,
-                            'from' => 'Beepsend',
-                            'error' => null
-                        ))
-                    ));
-        
+                        ],
+                        'response' => json_encode([
+                            'id' => ['07595980013893439611559146736007518'],
+                            'to' => '46736007518',
+                            'from' => 'Beepsend'
+                        ])
+                    ]);
+
         $client = new Client('abc123', $connector);
-        $message = $client->message->send(46736007518, 'Beepsend', 'Hello World! 你好世界!');
-        
+        $message = $client->message->send('46736007518', 'Beepsend', 'Hello World! 你好世界!');
+
         $this->assertInternalType('array', $message);
-        $this->assertEquals(07595980013893439611559146736007518, $message['id']);
-        $this->assertEquals(46736007518, $message['to']);
+        $this->assertEquals(['07595980013893439611559146736007518'], $message['id']);
+        $this->assertEquals('46736007518', $message['to']);
         $this->assertEquals('Beepsend', $message['from']);
-        $this->assertEquals(null, $message['error']);
     }
-    
+
     /**
      * Test sending messages to groups
      */
-    public function testGroup()
-    {
+    public function testGroup() {
         $connector = \Mockery::mock(new Curl());
         $connector->shouldReceive('call')
-                    ->with(BASE_API_URL . '/' . API_VERSION . '/batches/', 'POST', array(
-                        'from' => 'Beepsend',
-                        'groups' => array(1,2),
-                        'message' => 'You rock!',
-                        'encoding' => 'UTF-8',
-                        'receive_dlr' => 0
-                    ))
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/sendouts/', 'POST', [
+                        'sms'=> [
+                            'from'=>'beepsend',
+                            'groups'=> [1,2],
+                            'body'=>'you rock!',
+                            'encoding'=>'UTF-8'
+                            ]
+                        ])
                     ->once()
-                    ->andReturn(array(
-                        'info' => array(
+                    ->andReturn([
+                        'info' => [
                             'http_code' => 201,
                             'Content-Type' => 'application/json'
-                        ),
-                        'response' => json_encode(array(
-                            'groups' => array(1,2),
-                            'from' => 'Beepsend',
-                            'error' => null
-                        ))
-                    ));
-        
+                        ],
+                        'response' => json_encode([
+                        'sms' => [
+                            'from' => 'beepsend',
+                            'groups' => [1,2],
+                            'body' => 'You rock!',
+                            "encoding" => 'UTF-8'
+                            ]
+                        ])
+                    ]);
+
         $client = new Client('abc123', $connector);
-        $message = $client->message->group(array(1,2), 'Beepsend', 'You rock!');
-        
+        $message = $client->message->group([1,2], 'beepsend', 'you rock!');
+
         $this->assertInternalType('array', $message);
-        $this->assertInternalType('array', $message['groups']);
-        $this->assertEquals('Beepsend', $message['from']);
-        $this->assertEquals(null, $message['error']);
+        $this->assertInternalType('array', $message['sms']['groups']);
+        $this->assertEquals('beepsend', $message['sms']['from']);
     }
-    
+
+    /**
+     * Test sending messages to groups and multiple recipients
+     */
+    public function testSendouts() {
+        $connector = \Mockery::mock(new Curl());
+        $connector->shouldReceive('call')
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/sendouts/', 'POST', [
+                        'sms'=> [
+                            'from'=>'beepsend',
+                            'groups'=> [1,2],
+                            'to'=> ['46702123456', '46702789456'],
+                            'body'=>'Lets talk about honey badgers!',
+                            'encoding'=>'UTF-8'
+                            ]
+                        ])
+                    ->once()
+                    ->andReturn([
+                        'info' => [
+                            'http_code' => 201,
+                            'Content-Type' => 'application/json'
+                        ],
+                        'response' => json_encode([
+                        'sms' => [
+                            'from' => 'beepsend',
+                            'groups'=> [1,2],
+                            'to'=> ['46702123456', '46702789456'],
+                            'body'=>'Lets talk about honey badgers!',
+                            "encoding" => 'UTF-8'
+                            ]
+                        ])
+                    ]);
+
+        $client = new Client('abc123', $connector);
+        $message = $client->message->sendouts([1,2], ['46702123456', '46702789456'],'beepsend', 'Lets talk about honey badgers!');
+        $this->assertInternalType('array', $message);
+        $this->assertInternalType('array', $message['sms']['groups']);
+        $this->assertEquals('beepsend', $message['sms']['from']);
+    }
+
     /**
      * Test sending binary messages
      */
-    public function testBinary()
-    {
+    public function testBinary() {
         $connector = \Mockery::mock(new Curl());
         $connector->shouldReceive('call')
-                    ->with(BASE_API_URL . '/' . API_VERSION . '/sms/', 'POST', array(
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/send/', 'POST', [
                         'from' => 'Beepsend',
-                        'to' => 46736007518,
-                        'message' => 'Binary world',
-                        'receive_dlr' => 0,
+                        'to' => '46736007518',
+                        'message' => 'Binaryworld',
                         'message_type' => 'binary'
-                    ))
+                    ])
                     ->once()
-                    ->andReturn(array(
-                        'info' => array(
+                    ->andReturn([
+                        'info' => [
                             'http_code' => 200,
                             'Content-Type' => 'application/json'
-                        ),
-                        'response' => json_encode(array(
-                            'id' => 07595980013893439611559146736007518,
-                            'to' => 46736007518,
+                        ],
+                        'response' => json_encode([
+                            'id' => ['07595980013893439611559146736007518'],
+                            'to' => '46736007518',
                             'from' => 'Beepsend',
-                            'error' => null
-                        ))
-                    ));
-        
+                        ])
+                    ]);
+
         $client = new Client('abc123', $connector);
-        $message = $client->message->binary(46736007518, 'Beepsend', 'Binary world');
-        
+        $message = $client->message->binary('46736007518', 'Beepsend', 'Binaryworld');
+
         $this->assertInternalType('array', $message);
-        $this->assertEquals(07595980013893439611559146736007518, $message['id']);
-        $this->assertEquals(46736007518, $message['to']);
+        $this->assertEquals(['07595980013893439611559146736007518'], $message['id']);
+        $this->assertEquals('46736007518', $message['to']);
         $this->assertEquals('Beepsend', $message['from']);
-        $this->assertEquals(null, $message['error']);
     }
-    
+
     /**
      * Test getting details of sent messages
      */
-    public function testLookup()
-    {
+    public function testLookup() {
         $connector = \Mockery::mock(new Curl());
         $connector->shouldReceive('call')
                     ->with(BASE_API_URL . '/' . API_VERSION . '/sms/12345', 'GET', array())
@@ -151,10 +183,10 @@ class MessageTest extends PHPUnit_Framework_TestCase
                             'price' => 0.068
                         ))
                     ));
-        
+
         $client = new Client('abc123', $connector);
         $message = $client->message->lookup(12345);
-        
+
         $this->assertInternalType('array', $message);
         $this->assertEquals(12345, $message['id']);
         $this->assertEquals(46736007518, $message['to']['address']);
@@ -162,12 +194,11 @@ class MessageTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('DELIVRD', $message['dlr']['status']);
         $this->assertEquals(0.068, $message['price']);
     }
-    
+
     /**
      * Test getting details for multiple messages
      */
-    public function testMultipleLookup()
-    {
+    public function testMultipleLookup() {
         $connector = \Mockery::mock(new Curl());
         $connector->shouldReceive('call')
                     ->with(BASE_API_URL . '/' . API_VERSION . '/sms/', 'GET', array())
@@ -198,10 +229,10 @@ class MessageTest extends PHPUnit_Framework_TestCase
                             )
                         ))
                     ));
-        
+
         $client = new Client('abc123', $connector);
         $message = $client->message->multipleLookup();
-        
+
         $this->assertInternalType('array', $message);
         $this->assertEquals(12345, $message[0]['id']);
         $this->assertEquals(46736007518, $message[0]['to']['address']);
@@ -209,53 +240,14 @@ class MessageTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('DELIVRD', $message[0]['dlr']['status']);
         $this->assertEquals(0.068, $message[0]['price']);
     }
-    
-    /**
-     * Test validating messages
-     */
-    public function testValidate()
-    {
-        $connector = \Mockery::mock(new Curl());
-        $connector->shouldReceive('call')
-                    ->with(BASE_API_URL . '/' . API_VERSION . '/sms/validate/', 'POST', array(
-                        'from' => 'Beepsend',
-                        'to' => 46736007518,
-                        'message' => 'Hello World! 你好世界!',
-                        'encoding' => 'UTF-8',
-                        'receive_dlr' => 0
-                    ))
-                    ->once()
-                    ->andReturn(array(
-                        'info' => array(
-                            'http_code' => 200,
-                            'Content-Type' => 'application/json'
-                        ),
-                        'response' => json_encode(array(
-                            'id' => null,
-                            'to' => 46736007518,
-                            'from' => 'Beepsend',
-                            'error' => null
-                        ))
-                    ));
-        
-        $client = new Client('abc123', $connector);
-        $message = $client->message->validate(46736007518, 'Beepsend', 'Hello World! 你好世界!');
-        
-        $this->assertInternalType('array', $message);
-        $this->assertEquals(null, $message['id']);
-        $this->assertEquals(46736007518, $message['to']);
-        $this->assertEquals('Beepsend', $message['from']);
-        $this->assertEquals(null, $message['error']);
-    }
-    
+
     /**
      * Test getting batches
      */
-    public function testBatches()
-    {
+    public function testBatches() {
         $connector = \Mockery::mock(new Curl());
         $connector->shouldReceive('call')
-                    ->with(BASE_API_URL . '/' . API_VERSION . '/batches/', 'GET', array())
+                    ->with(BASE_API_URL . '/' . API_VERSION . '/sendouts/', 'GET', array())
                     ->once()
                     ->andReturn(array(
                         'info' => array(
@@ -277,10 +269,10 @@ class MessageTest extends PHPUnit_Framework_TestCase
                             )
                         ))
                     ));
-        
+
         $client = new Client('abc123', $connector);
-        $message = $client->message->batches();
-        
+        $message = $client->message->getSendouts();
+
         $this->assertInternalType('array', $message);
         $this->assertEquals(3, $message[0]['id']);
         $this->assertEquals('My custom name for my batch', $message[0]['label']);
@@ -291,12 +283,11 @@ class MessageTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(1387457467, $message[1]['date_created']);
         $this->assertEquals(1387457467, $message[1]['last_used']);
     }
-    
+
     /**
-     * Test getting paginated overview of messages in a batch, complete with sent and recieved message body. 
+     * Test getting paginated overview of messages in a batch, complete with sent and recieved message body.
      */
-    public function testTwoWayBatches()
-    {
+    public function testTwoWayBatches() {
         $connector = \Mockery::mock(new Curl());
         $connector->shouldReceive('call')
                     ->with(BASE_API_URL . '/' . API_VERSION . '/batches/123/messages/', 'GET', array(
@@ -319,10 +310,10 @@ class MessageTest extends PHPUnit_Framework_TestCase
                             )
                         ))
                     ));
-        
+
         $client = new Client('abc123', $connector);
         $messages = $client->message->twoWayBatch(123);
-        
+
         $this->assertInternalType('array', $messages);
         $this->assertEquals(889000680270500421, $messages[0]['mt_sms_id']);
         $this->assertEquals('What is your name?', $messages[0]['mt_body']);
@@ -330,12 +321,11 @@ class MessageTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('Sir Lancelot', $messages[0]['mo_body']);
         $this->assertEquals('DELIVRD', $messages[0]['dlr_stat']);
     }
-    
+
     /**
      * Test call for estimation
      */
-    public function testEstimationCost()
-    {
+    public function testEstimationCost() {
         $connector = \Mockery::mock(new Curl());
         $connector->shouldReceive('call')
                     ->with(BASE_API_URL . '/' . API_VERSION . '/sms/costestimate/', 'POST', array(
@@ -354,20 +344,19 @@ class MessageTest extends PHPUnit_Framework_TestCase
                             'to' => array(46736007518)
                         ))
                     ));
-        
+
         $client = new Client('abc123', $connector);
         $message = $client->message->estimateCost(46736007518, 'Hello World! 你好世界!');
-        
+
         $this->assertInternalType('array', $message);
         $this->assertEquals(0.013, $message['total_cost']);
         $this->assertEquals(46736007518, $message['to'][0]);
     }
-    
+
     /**
      * Test call for group estimation
      */
-    public function testGroupEstimationCost()
-    {
+    public function testGroupEstimationCost() {
         $connector = \Mockery::mock(new Curl());
         $connector->shouldReceive('call')
                     ->with(BASE_API_URL . '/' . API_VERSION . '/sms/costestimate/', 'POST', array(
@@ -389,21 +378,20 @@ class MessageTest extends PHPUnit_Framework_TestCase
                             )
                         ))
                     ));
-        
+
         $client = new Client('abc123', $connector);
         $message = $client->message->estimateCostGroup(array(11, 34), 'Hello World! 你好世界!');
-        
+
         $this->assertInternalType('array', $message);
         $this->assertEquals(358.57, $message['total_cost']);
         $this->assertEquals(13.45, $message['groups'][11]);
         $this->assertEquals(345.12, $message['groups'][34]);
     }
-    
+
     /**
      * Test listing your user conversations
      */
-    public function testConversations()
-    {
+    public function testConversations() {
         $connector = \Mockery::mock(new Curl());
         $connector->shouldReceive('call')
                     ->with(BASE_API_URL . '/' . API_VERSION . '/conversations/', 'GET', array())
@@ -430,10 +418,10 @@ class MessageTest extends PHPUnit_Framework_TestCase
                             )
                         ))
                     ));
-        
+
         $client = new Client('abc123', $connector);
         $conversations = $client->message->conversations();
-        
+
         $this->assertInternalType('array', $conversations);
         $this->assertEquals('46736007500-46736000005', $conversations[0]['id']);
         $this->assertEquals(46736007500, $conversations[0]['to']);
@@ -444,12 +432,11 @@ class MessageTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('Hi. This is a test message', $conversations[0]['body']);
         $this->assertEquals(1383225355, $conversations[0]['timestamp']);
     }
-    
+
     /**
      * Test list all messages sent back and forth in to a single contact/number.
      */
-    public function testFullConversations()
-    {
+    public function testFullConversations() {
         $connector = \Mockery::mock(new Curl());
         $connector->shouldReceive('call')
                     ->with(BASE_API_URL . '/' . API_VERSION . '/conversations/123', 'GET', array())
@@ -481,10 +468,10 @@ class MessageTest extends PHPUnit_Framework_TestCase
                             )
                         ))
                     ));
-        
+
         $client = new Client('abc123', $connector);
         $conversations = $client->message->fullConversation('123');
-        
+
         $this->assertInternalType('array', $conversations);
         $this->assertEquals('46736007500-46736000005', $conversations[0]['id']);
         $this->assertEquals(46736007500, $conversations[0]['to']);
@@ -498,10 +485,9 @@ class MessageTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(null, $conversations[0]['items']['batch']);
         $this->assertEquals('Hello world!', $conversations[0]['items']['body']);
     }
-    
-    public function tearDown()
-    {
+
+    public function tearDown() {
         \Mockery::close();
     }
-    
+
 }
