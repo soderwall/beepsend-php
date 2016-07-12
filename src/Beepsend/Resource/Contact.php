@@ -68,7 +68,7 @@ class Contact
      * @param int $groupId Contact group id
      * @return array
      */
-    public function add($msisdn, $firstName = null, $lastName = null, $groupId = null)
+    public function add($msisdn, $firstName = null, $lastName = null, $groups = null)
     {
         $data = array(
             'msisdn' => $msisdn
@@ -81,9 +81,19 @@ class Contact
         if (!is_null($lastName)) {
             $data['lastname'] = $lastName;
         }
-        
-        if (!is_null($groupId)) {
-            $data['group_id'] = $groupId;
+
+        if (!is_null($groups)) {
+            if (!is_array($groups)) {
+                throw new \InvalidArgumentException('groups must be an array of integers');
+            } else {
+                foreach($groups as $group) {
+                    if (!is_int($group)) {
+                        throw new \InvalidArgumentException('groups must be an array of integers.');
+                    } else {
+                        $data['groups'][] = array( 'id' => (int)$group);
+                    }
+                }
+            }
         }
         
         $response = $this->request->execute($this->actions['contacts'], 'POST', $data);

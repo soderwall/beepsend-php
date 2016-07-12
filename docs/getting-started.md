@@ -38,7 +38,7 @@ require_once __DIR__ . '/vendor/autoload.php';
 use Beepsend\Client;
 
 $client = new Client('userOrConnectionToken');
-$client->message->send(46736007518, 'BEEPSEND', 'Hello World! 你好世界!');
+$client->message->send('46736007518', 'BEEPSEND', 'Hello World! 你好世界!');
 ```
 
 ### Get customer data
