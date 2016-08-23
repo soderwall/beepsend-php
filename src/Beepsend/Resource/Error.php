@@ -34,18 +34,23 @@ class Error
     }
 
     /**
-     * @param null $id
+     * Get all errors
      * @return array
      */
-    public function get($id = null)
+    public function all()
     {
-        $url = $this->actions['errors'];
-
-        if ($id) {
-            $url .= (int)$id;
-        }
-
-        return $this->request->execute($url, 'GET');
+        $response = $this->request->execute($this->actions['errors'], 'GET');
+        return $response;
     }
 
+    /**
+     * Get data for single error code
+     * @param string $id Error id
+     * @return array
+     */
+    public function get($id = '')
+    {
+        $response = $this->request->execute($this->actions['errors'] . $id, 'GET');
+        return $response;
+    }
 }
