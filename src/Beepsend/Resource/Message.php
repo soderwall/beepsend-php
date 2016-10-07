@@ -91,11 +91,11 @@ class Message
             'encoding' => $encoding
         ];
         if (isset($options['label'])) {
-            $data = array_merge($data, $options['label']);
+            $data['label'] = $options['label'];
             unset($options['label']);
         }
         if (isset($options['send_time'])) {
-            $data = array_merge($data, $options['send_time']);
+            $data['send_time'] = $options['send_time'];
             unset($options['send_time']);
         }
         /* Merge additional options if we have */
